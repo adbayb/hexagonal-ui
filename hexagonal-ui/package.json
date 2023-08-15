@@ -1,0 +1,41 @@
+{
+	"name": "hexagonal-ui",
+	"description": "Cross-framework design system building blocks enabled by the hexagonal architecture pattern",
+	"version": "0.0.0",
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist"
+	],
+	"sideEffects": false,
+	"type": "module",
+	"source": "./src/index.ts",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.mjs",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"license": "MIT",
+	"author": "Ayoub Adib <adbayb@gmail.com> (https://twitter.com/adbayb)",
+	"bugs": "https://github.com/adbayb/hexagonal-ui/issues",
+	"homepage": "https://github.com/adbayb/hexagonal-ui/tree/main/hexagonal-ui#readme",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:adbayb/hexagonal-ui.git",
+		"directory": "hexagonal-ui"
+	},
+	"scripts": {
+		"start": "pnpm watch",
+		"build": "quickbundle build",
+		"watch": "quickbundle watch"
+	},
+	"devDependencies": {
+		"quickbundle": "1.2.0"
+	}
+}

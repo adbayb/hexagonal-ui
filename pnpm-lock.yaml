@@ -48,7 +48,7 @@ importers:
   examples/default:
     dependencies:
       hexagonal-ui:
-        specifier: ^0.0.0
+        specifier: ^0.1.0
         version: link:../../hexagonal-ui
     devDependencies:
       esbuild-register:

@@ -1,0 +1,47 @@
+{
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"prepare": "stack install",
+		"clean": "stack clean",
+		"check": "pnpm build && stack check",
+		"fix": "pnpm build && stack fix",
+		"start": "turbo run start",
+		"build": "turbo run build",
+		"watch": "turbo run watch",
+		"release:log": "pnpm changeset",
+		"release:version": "pnpm changeset version && pnpm install --no-frozen-lockfile",
+		"release:publish": "pnpm build && pnpm changeset publish"
+	},
+	"packageManager": "pnpm@8.6.12",
+	"engines": {
+		"node": ">=18.0.0",
+		"pnpm": ">=8.0.0",
+		"npm": "please-use-pnpm",
+		"yarn": "please-use-pnpm"
+	},
+	"prettier": "@adbayb/prettier-config",
+	"eslintConfig": {
+		"extends": "@adbayb"
+	},
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		]
+	},
+	"devDependencies": {
+		"@adbayb/eslint-config": "1.1.0",
+		"@adbayb/prettier-config": "1.1.0",
+		"@adbayb/stack": "1.5.0",
+		"@adbayb/ts-config": "1.0.0",
+		"@changesets/changelog-github": "0.4.8",
+		"@changesets/cli": "2.26.2",
+		"@commitlint/cli": "17.7.1",
+		"@commitlint/config-conventional": "17.7.0",
+		"eslint": "8.47.0",
+		"prettier": "3.0.2",
+		"turbo": "1.10.12",
+		"typescript": "5.1.6"
+	}
+}

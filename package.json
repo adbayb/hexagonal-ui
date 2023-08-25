@@ -1,0 +1,40 @@
+{
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"prepare": "stack install",
+		"clean": "stack clean",
+		"check": "stack check",
+		"fix": "stack fix",
+		"start": "stack start",
+		"build": "stack build",
+		"watch": "stack watch",
+		"test": "stack test",
+		"release:log": "stack release --log",
+		"release:version": "stack release --tag",
+		"release:publish": "stack release --publish"
+	},
+	"packageManager": "pnpm@8.6.12",
+	"engines": {
+		"node": ">=18.0.0",
+		"pnpm": ">=8.0.0",
+		"npm": "please-use-pnpm",
+		"yarn": "please-use-pnpm"
+	},
+	"prettier": "@adbayb/prettier-config",
+	"eslintConfig": {
+		"extends": "@adbayb"
+	},
+	"commitlint": {
+		"extends": [
+			"@commitlint/config-conventional"
+		]
+	},
+	"devDependencies": {
+		"@adbayb/eslint-config": "1.1.0",
+		"@adbayb/prettier-config": "1.1.0",
+		"@adbayb/stack": "1.7.0",
+		"@adbayb/ts-config": "1.0.0"
+	}
+}

@@ -1,7 +1,7 @@
 {
 	"name": "hexagonal-ui",
 	"description": "Cross-framework and low-level design system building blocks with a focus on customization, interactions, and accessibility",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"publishConfig": {
 		"access": "public"
 	},

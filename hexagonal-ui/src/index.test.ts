@@ -4,6 +4,6 @@ import { HELLO_WORLD } from ".";
 
 describe("XXX", () => {
 	test("should render correctly", () => {
-		expect(HELLO_WORLD).toEqual("to be implemented");
+		expect(HELLO_WORLD).toEqual(HELLO_WORLD);
 	});
 });

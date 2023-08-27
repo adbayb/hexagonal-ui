@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@adbayb/eslint-config':
-        specifier: 1.3.0
-        version: 1.3.0(eslint@8.48.0)(prettier@3.0.2)(typescript@5.2.2)
+        specifier: 1.4.0
+        version: 1.4.0(eslint@8.48.0)(prettier@3.0.2)(typescript@5.2.2)
       '@adbayb/prettier-config':
         specifier: 1.2.0
         version: 1.2.0(prettier@3.0.2)
@@ -81,8 +81,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /@adbayb/eslint-config@1.3.0(eslint@8.48.0)(prettier@3.0.2)(typescript@5.2.2):
-    resolution: {integrity: sha512-b7CSUdAHWqtqycnsGKKGwSQZx6HI146uCad1frmXIzbvB1v2/y9ALWaFc2dkcLvtjxBfB4Flsv/ecIu4GXxQKQ==}
+  /@adbayb/eslint-config@1.4.0(eslint@8.48.0)(prettier@3.0.2)(typescript@5.2.2):
+    resolution: {integrity: sha512-3PC5XuD3BB/z2FsHd/ym46EDVhEud4P4+JpYt8L03CcOHo96QB1zRuD2idGjMEr0bsfNDXfhF5X5GUGJ8oHw5Q==}
     peerDependencies:
       eslint: '>=8.0.0'
       prettier: '>=3.0.0'

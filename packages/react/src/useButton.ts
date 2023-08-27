@@ -1,7 +1,13 @@
-import { UseButton } from "@hexagonal-ui/core";
+import { useButton as useButtonPattern } from "@hexagonal-ui/core";
 
 export const useButton = () => {
-	// @todo: useMemo
-	// @todo: useState, ...
-	return new UseButton().toObject();
+	// @todo: useMemo, useState, ...
+	return useButtonPattern(
+		{},
+		{
+			update() {
+				console.log("todo state management");
+			},
+		},
+	);
 };

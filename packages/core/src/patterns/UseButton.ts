@@ -8,9 +8,10 @@ import { Button } from "../elements/Button";
 export class UseButton {
 	private readonly element: Button;
 
-	// @todo
+	// @todo IdGenerator driven adapters
+	// @see https://medium.com/ssense-tech/hexagonal-architecture-there-are-always-two-sides-to-every-story-bc0780ed7d9c
+	// https://github.com/carlphilipp/clean-architecture-example/blob/master/usecase/src/main/java/com/slalom/example/usecase/CreateUser.java
 	public constructor() {
-		console.log("hello world");
 		this.element = new Button({
 			children: "",
 		});
@@ -32,7 +33,3 @@ export class UseButton {
 		};
 	}
 }
-
-const dto = new UseButton().toObject();
-
-console.log(dto);

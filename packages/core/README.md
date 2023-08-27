@@ -1,6 +1,6 @@
 <br>
 <div align="center">
-    <h1>📦 hexagonal-ui</h1>
+    <h1>📦 @hexagonal-ui/core</h1>
     <strong>Cross-framework and low-level design system building blocks with a focus on customization, interactions, and accessibility</strong>
 </div>
 <br>

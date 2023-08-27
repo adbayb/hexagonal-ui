@@ -1,6 +1,6 @@
 {
-	"name": "hexagonal-ui",
-	"description": "Cross-framework and low-level design system building blocks with a focus on customization, interactions, and accessibility",
+	"name": "@hexagonal-ui/react",
+	"description": "Hexagonal UI React adapter",
 	"version": "0.0.0",
 	"publishConfig": {
 		"access": "public"
@@ -28,7 +28,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:adbayb/hexagonal-ui.git",
-		"directory": "hexagonal-ui"
+		"directory": "adapters/react"
 	},
 	"scripts": {
 		"start": "pnpm watch",
@@ -36,7 +36,14 @@
 		"watch": "quickbundle watch",
 		"test": "vitest"
 	},
+	"peerDependencies": {
+		"react": "^17.0.0 || ^18.0.0"
+	},
+	"dependencies": {
+		"@hexagonal-ui/core": "workspace:^"
+	},
 	"devDependencies": {
+		"@types/react": "18.2.21",
 		"quickbundle": "1.2.0",
 		"vitest": "0.34.3"
 	}

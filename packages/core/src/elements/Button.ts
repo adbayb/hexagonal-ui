@@ -7,14 +7,6 @@ export class Button extends View<ButtonAttributes> {
 	}
 }
 
-const button = new Button({
-	children: "Hello world",
-});
-
-const children = button.getChildren();
-
-console.log(children);
-
 type ButtonAttributes = {
 	children: boolean | number | string;
 	"aria-describedby"?: string;

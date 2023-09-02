@@ -1,13 +1,24 @@
 import { useButton as useButtonPattern } from "@hexagonal-ui/core";
+import { useEffect, useRef, useState } from "react";
 
 export const useButton = () => {
-	// @todo: useMemo, useState, ...
-	return useButtonPattern(
-		{},
-		{
-			update() {
-				console.log("todo state management");
-			},
-		},
+	const patternRef = useRef(
+		useButtonPattern({
+			children: "Hello world",
+		}),
 	);
+
+	const [children, setChildren] = useState(patternRef.current.children.value);
+
+	useEffect(() => {
+		patternRef.current.children.observe(setChildren);
+
+		return () => {
+			patternRef.current.children.unobserve();
+		};
+	}, []);
+
+	return {
+		children,
+	};
 };

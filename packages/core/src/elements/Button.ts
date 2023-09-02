@@ -1,4 +1,5 @@
 import type { View } from "./View";
+import type { Event } from "./types";
 
 export type Button = View<
 	"button",
@@ -8,5 +9,6 @@ export type Button = View<
 		"aria-labelledby"?: string;
 		"aria-disabled"?: boolean;
 		"aria-pressed"?: boolean;
+		onClick: (event: Event<HTMLButtonElement>) => void;
 	}
 >;

@@ -9,7 +9,7 @@
 		"fix": "stack fix",
 		"start": "stack start",
 		"build": "stack build",
-		"watch": "stack watch",
+		"watch": "stack clean && stack watch",
 		"test": "stack test",
 		"release:log": "stack release --log",
 		"release:version": "stack release --tag",

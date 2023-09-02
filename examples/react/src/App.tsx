@@ -1,7 +1,9 @@
 import { useButton } from "@hexagonal-ui/react";
 
 export const App = () => {
-	const props = useButton();
+	const { tag: Component, ...props } = useButton({ children: "Hello" });
 
-	return <div {...props} />;
+	console.log(props);
+
+	return <Component {...props} />;
 };

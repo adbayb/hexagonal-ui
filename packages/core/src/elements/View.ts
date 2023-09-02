@@ -5,9 +5,9 @@ export type View<
 	Tag extends "a" | "button",
 	Attributes extends Record<
 		string | "children",
-		boolean | number | string | ((...arg: unknown[]) => unknown)
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		boolean | number | string | ((...args: any[]) => any)
 	>,
-> = {
+> = Attributes & {
 	tag: Tag;
-	attributes: Attributes;
 };

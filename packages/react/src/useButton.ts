@@ -1,24 +1,23 @@
+import type { UseButtonViewModel } from "@hexagonal-ui/core";
 import { useButton as useButtonPattern } from "@hexagonal-ui/core";
 import { useEffect, useRef, useState } from "react";
 
-export const useButton = () => {
-	const patternRef = useRef(
-		useButtonPattern({
-			children: "Hello world",
-		}),
-	);
-
+export const useButton: UseButtonViewModel = (initialState) => {
+	const patternRef = useRef(useButtonPattern(initialState));
 	const [children, setChildren] = useState(patternRef.current.children.value);
 
 	useEffect(() => {
-		patternRef.current.children.observe(setChildren);
+		const observableChildren = patternRef.current.children;
+
+		observableChildren.observe(setChildren);
 
 		return () => {
-			patternRef.current.children.unobserve();
+			observableChildren.unobserve();
 		};
 	}, []);
 
 	return {
+		...patternRef.current,
 		children,
 	};
 };

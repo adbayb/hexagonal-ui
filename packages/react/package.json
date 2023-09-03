@@ -34,7 +34,8 @@
 		"start": "pnpm watch",
 		"build": "quickbundle build",
 		"watch": "quickbundle watch",
-		"test": "vitest"
+		"test": "vitest",
+		"check": "tsc --noEmit"
 	},
 	"peerDependencies": {
 		"react": "^17.0.0 || ^18.0.0"

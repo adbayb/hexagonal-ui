@@ -19,6 +19,11 @@
 			"dependsOn": ["build"],
 			"cache": false,
 			"persistent": true
+		},
+		"check": {
+			"dependsOn": ["build"],
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

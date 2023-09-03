@@ -1,18 +1,20 @@
 {
-  "private": true,
+	"private": true,
 	"name": "@examples/solid",
 	"version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "watch": "vite",
-    "build": "tsc && vite build",
-    "start": "vite preview"
-  },
-  "dependencies": {
-    "solid-js": "^1.7.11"
-  },
-  "devDependencies": {
-    "vite": "4.4.9",
-    "vite-plugin-solid": "2.7.0"
-  }
+	"type": "module",
+	"scripts": {
+		"watch": "vite",
+		"build": "tsc && vite build",
+		"start": "vite preview",
+		"check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@hexagonal-ui/solid": "workspace:^",
+		"solid-js": "^1.7.11"
+	},
+	"devDependencies": {
+		"vite": "4.4.9",
+		"vite-plugin-solid": "2.7.0"
+	}
 }

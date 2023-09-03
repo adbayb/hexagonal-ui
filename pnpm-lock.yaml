@@ -48,6 +48,9 @@ importers:
 
   examples/solid:
     dependencies:
+      '@hexagonal-ui/solid':
+        specifier: workspace:^
+        version: link:../../packages/solid
       solid-js:
         specifier: ^1.7.11
         version: 1.7.11
@@ -83,6 +86,22 @@ importers:
       quickbundle:
         specifier: 1.2.0
         version: 1.2.0
+      vitest:
+        specifier: 0.34.3
+        version: 0.34.3
+
+  packages/solid:
+    dependencies:
+      '@hexagonal-ui/core':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      quickbundle:
+        specifier: 1.2.0
+        version: 1.2.0
+      solid-js:
+        specifier: 1.7.11
+        version: 1.7.11
       vitest:
         specifier: 0.34.3
         version: 0.34.3

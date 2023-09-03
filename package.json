@@ -5,7 +5,7 @@
 	"scripts": {
 		"prepare": "stack install",
 		"clean": "stack clean",
-		"check": "stack check",
+		"check": "turbo run check",
 		"fix": "stack fix",
 		"start": "stack start",
 		"build": "stack build",

@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "pnpm watch",
 		"watch": "parcel",
-		"build": "parcel build"
+		"build": "parcel build",
+		"check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@hexagonal-ui/react": "workspace:^",

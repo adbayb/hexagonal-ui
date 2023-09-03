@@ -1,6 +1,6 @@
 {
-	"name": "@hexagonal-ui/core",
-	"description": "Cross-framework and low-level design system building blocks with a focus on customization, interactions, and accessibility",
+	"name": "@hexagonal-ui/solid",
+	"description": "Hexagonal UI SolidJS adapter",
 	"version": "0.0.0",
 	"publishConfig": {
 		"access": "public"
@@ -28,7 +28,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:adbayb/hexagonal-ui.git",
-		"directory": "core"
+		"directory": "adapters/react"
 	},
 	"scripts": {
 		"start": "pnpm watch",
@@ -37,8 +37,15 @@
 		"test": "vitest",
 		"check": "tsc --noEmit"
 	},
+	"peerDependencies": {
+		"solid-js": "^1.0.0"
+	},
+	"dependencies": {
+		"@hexagonal-ui/core": "workspace:^"
+	},
 	"devDependencies": {
 		"quickbundle": "1.2.0",
+		"solid-js": "1.7.11",
 		"vitest": "0.34.3"
 	}
 }

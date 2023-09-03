@@ -18,6 +18,6 @@ export const useButton: UseButtonViewModel = (initialState) => {
 
 	return {
 		...pattern,
-		children: children as unknown as boolean | number | string,
+		children: children as unknown as boolean | number | string, // @todo: generify UseButtonViewModel to accept Accessor wrapping
 	};
 };

@@ -2,11 +2,11 @@
 	"private": true,
 	"name": "@examples/react",
 	"version": "0.0.0",
-	"source": "./src/index.html",
+	"type": "module",
 	"scripts": {
-		"start": "pnpm watch",
-		"watch": "parcel",
-		"build": "parcel build",
+		"watch": "vite",
+		"build": "tsc && vite build",
+		"start": "vite preview",
 		"check": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -17,6 +17,7 @@
 	"devDependencies": {
 		"@types/react": "18.2.21",
 		"@types/react-dom": "18.2.7",
-		"parcel": "2.9.3"
+		"@vitejs/plugin-react": "4.0.4",
+		"vite": "4.4.9"
 	}
 }

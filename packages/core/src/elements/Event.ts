@@ -1,3 +1,6 @@
+/**
+ * Event (Value Object)
+ */
 export type Event<E = Element> = {
 	bubbles: boolean;
 	cancelable: boolean;

@@ -1,5 +1,5 @@
 import type { View } from "./View";
-import type { Event } from "./types";
+import type { Event } from "./Event";
 
 export type Button = View<
 	"button",

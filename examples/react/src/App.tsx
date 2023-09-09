@@ -1,9 +1,13 @@
 import { useButton } from "@hexagonal-ui/react";
 
-export const App = () => {
-	const { tag: Component, ...props } = useButton({ children: "Hello" });
-
-	console.log(Component, props);
+const Button = () => {
+	const { tag: Component, ...props } = useButton({
+		children: "Hello from React 👋",
+	});
 
 	return <Component {...props} />;
+};
+
+export const App = () => {
+	return <Button />;
 };

@@ -1,4 +1,4 @@
-import type { PatternPort, StatePort } from "../shared/Ports";
+import type { PatternFactory } from "../shared/Ports";
 
 import type { Button } from "./Button";
 
@@ -12,10 +12,18 @@ type ResponseModel = Pick<Button, "children" | "onClick" | "tag">;
  * Button pattern factory
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/button/
  */
-export const createUseButton =
-	(state: StatePort): PatternPort<RequestModel, ResponseModel> =>
+export const createUseButton: PatternFactory<RequestModel, ResponseModel> =
+	({ lifecycle, state }) =>
 	(requestModel) => {
 		const [children, setChildren] = state(requestModel.children);
+
+		lifecycle.onMount(() => {
+			console.log("useButton mounted");
+		});
+
+		lifecycle.onDestroy(() => {
+			console.log("useButton destroyed");
+		});
 
 		return {
 			tag: "button",

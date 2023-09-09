@@ -1,4 +1,26 @@
 import { createUseButton } from "@hexagonal-ui/core";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export const useButton = createUseButton(useState);
+const useMount = (callback: () => void) => {
+	const callbackRef = useRef(callback);
+
+	useEffect(() => {
+		callbackRef.current();
+	}, []);
+};
+
+const useDestroy = (callback: () => void) => {
+	const callbackRef = useRef(callback);
+
+	useEffect(() => {
+		return callbackRef.current;
+	}, []);
+};
+
+export const useButton = createUseButton({
+	lifecycle: {
+		onMount: useMount,
+		onDestroy: useDestroy,
+	},
+	state: useState,
+});

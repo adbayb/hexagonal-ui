@@ -1,4 +1,7 @@
 import { createUseButton } from "@hexagonal-ui/core";
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 
-export const useButton = createUseButton(createSignal);
+export const useButton = createUseButton({
+	lifecycle: { onMount, onDestroy: onCleanup },
+	state: createSignal,
+});

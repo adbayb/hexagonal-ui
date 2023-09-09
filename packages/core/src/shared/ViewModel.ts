@@ -1,10 +1,5 @@
 import type { Observable } from "./observer";
 
-export type Pattern<
-	RequestModel extends object,
-	ResponseModel extends object,
-> = (requestModel: RequestModel) => ResponseModel;
-
 /**
  * Utility type to generate an exploitable model UI side by unwrapping any observable value from the `Pattern` output
  */

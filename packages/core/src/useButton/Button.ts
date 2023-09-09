@@ -1,6 +1,9 @@
-import type { View } from "./View";
-import type { Event } from "./Event";
+import type { Event } from "../shared/Event";
+import type { View } from "../shared/View";
 
+/**
+ * Button element
+ */
 export type Button = View<
 	"button",
 	{
@@ -10,5 +13,6 @@ export type Button = View<
 		"aria-disabled"?: boolean;
 		"aria-pressed"?: boolean;
 		onClick: (event: Event<HTMLButtonElement>) => void;
+		role?: "button";
 	}
 >;

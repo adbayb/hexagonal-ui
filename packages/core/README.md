@@ -28,8 +28,8 @@ This section introduces the `hexagonal-ui` essentials by walking through its mai
 Two main layers:
 
 -   **Core**: like the Application core in the hexagonal architecture, it centralizes all the core library logic and includes two levels
-    -   Elements: Low-level entities modelizing HTML elements
-    -   Patterns: Element aggregates implementing UX patterns (documented in the [WCAG website](https://www.w3.org/WAI/ARIA/apg/patterns/))
+    -   Elements: Low-level entities modelizing HTML elements (e.g. Accordion, Button, ...)
+    -   Patterns: Element aggregates implementing UX patterns (e.g. useButton, useDialog, ... documented in the [WCAG website](https://www.w3.org/WAI/ARIA/apg/patterns/))
 -   **Adapters**: Surrounding the core, this layer aims to interact with it to implement framework specificities. There'll be typically one adapter library per UI framework. Each library is a concrete implementation of the different ports/interfaces exposed by the core (eg. ViewModel ports, ...)
 
 <br>

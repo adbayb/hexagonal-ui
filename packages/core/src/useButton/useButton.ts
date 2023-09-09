@@ -1,8 +1,9 @@
-import type { Button } from "../elements/Button";
+import type { Pattern } from "../shared/Pattern";
+import type { ViewModel } from "../shared/ViewModel";
+import { createObservable } from "../shared/observer";
+import type { Observable } from "../shared/observer";
 
-import { createObservable } from "./observer";
-import type { Observable } from "./observer";
-import type { Pattern, ViewModel } from "./types";
+import type { Button } from "./Button";
 
 type RequestModel = Pick<Button, "children">;
 
@@ -15,6 +16,7 @@ type ResponseModel = Pick<Button, "onClick" | "tag"> & {
 export type UseButtonViewModel = ViewModel<RequestModel, ResponseModel>;
 
 /**
+ * Button pattern
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/button/
  */
 export const useButton: Pattern<RequestModel, ResponseModel> = (

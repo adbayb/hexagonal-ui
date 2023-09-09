@@ -1,2 +1,1 @@
-export { useButton } from "./useButton";
-export type { UseButtonViewModel } from "./useButton";
+export { createUseButton } from "./useButton";

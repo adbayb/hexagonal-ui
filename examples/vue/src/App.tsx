@@ -3,16 +3,11 @@ import { useButton } from "@hexagonal-ui/vue";
 
 const Button = defineComponent({
 	setup() {
-		const {
-			tag: Component,
-			children: vueChildren,
-			...props
-		} = useButton({
+		const { props, children } = useButton({
 			children: "Hello from Vue 👋",
 		});
 
-		// @ts-expect-error to fix (event value object type conflicts)
-		return () => <Component {...props}>{vueChildren}</Component>;
+		return () => <button {...props}>{children()}</button>;
 	},
 });
 

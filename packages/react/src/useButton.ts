@@ -17,10 +17,21 @@ const useDestroy = (callback: () => void) => {
 	}, []);
 };
 
+const useStateAdapter = <Value>(initialState: Value) => {
+	const [value, setValue] = useState(initialState);
+
+	return [
+		() => value,
+		(newValue: Value) => {
+			setValue(newValue);
+		},
+	] as const;
+};
+
 export const useButton = createUseButton({
 	lifecycle: {
 		onMount: useMount,
 		onDestroy: useDestroy,
 	},
-	state: useState,
+	state: useStateAdapter,
 });

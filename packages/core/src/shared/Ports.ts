@@ -8,7 +8,7 @@ export type PatternPort<
 // #region Output ports
 export type StatePort = <Value>(
 	initialState: Value,
-) => [Value, (newValue: Value) => void];
+) => readonly [() => Value, (newValue: Value) => void];
 
 export type LifecyclePort = {
 	onMount: (callback: () => void) => void;

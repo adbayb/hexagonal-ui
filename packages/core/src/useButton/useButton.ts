@@ -2,11 +2,15 @@ import type { PatternFactory } from "../shared/Ports";
 
 import type { Button } from "./Button";
 
-type RequestModel = Pick<Button, "children">;
+type RequestModel = {
+	children: ReturnType<Button["children"]>;
+};
 
 // The response model always look like to the underlying domain entity (which corresponds here to an element)
 // No need to have a concrete DTO which will introduce uneeded layer of indirection (a pattern is anyway strongly tied to elements)
-type ResponseModel = Pick<Button, "children" | "onClick" | "tag">;
+type ResponseModel = Pick<Button, "children"> & {
+	props: Pick<Button["props"], "onClick" | "role">;
+};
 
 /**
  * Button pattern factory
@@ -26,11 +30,12 @@ export const createUseButton: PatternFactory<RequestModel, ResponseModel> =
 		});
 
 		return {
-			tag: "button",
-			children,
-			onClick(event) {
-				console.log("click", event);
-				setChildren("Mutated after click");
+			props: {
+				role: "button",
+				onClick(event) {
+					setChildren(`Mutated after ${event.type}`);
+				},
 			},
+			children,
 		};
 	};

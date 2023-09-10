@@ -1,15 +1,11 @@
 import { useButton } from "@hexagonal-ui/solid";
-import { Dynamic } from "solid-js/web";
 
 const Button = () => {
-	const { tag, ...props } = useButton({ children: "Hello from Solid 👋" });
+	const { props, children } = useButton({
+		children: "Hello from Solid 👋",
+	});
 
-	return (
-		<Dynamic
-			component={tag}
-			{...props}
-		/>
-	);
+	return <button {...props}>{children()}</button>;
 };
 
 export const App = () => {

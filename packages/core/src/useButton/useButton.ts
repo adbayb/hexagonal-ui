@@ -1,16 +1,16 @@
-import type { PatternFactory } from "../shared/Ports";
+import type {
+	PatternFactory,
+	PatternInputDto,
+	PatternOutputDto,
+} from "../shared/Pattern";
 
 import type { Button } from "./Button";
 
-type RequestModel = {
-	children: ReturnType<Button["children"]>;
-};
+type RequestModel = PatternInputDto<Pick<Button, "children">>;
 
-// The response model always look like to the underlying domain entity (which corresponds here to an element)
-// No need to have a concrete DTO which will introduce uneeded layer of indirection (a pattern is anyway strongly tied to elements)
-type ResponseModel = Pick<Button, "children"> & {
-	props: Pick<Button["props"], "onClick" | "role">;
-};
+type ResponseModel = PatternOutputDto<
+	Pick<Button, "children" | "onClick" | "role">
+>;
 
 /**
  * Button pattern factory

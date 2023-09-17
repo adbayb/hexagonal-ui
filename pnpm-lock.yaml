@@ -15,14 +15,11 @@ importers:
         specifier: 1.2.0
         version: 1.2.0(prettier@3.0.2)
       '@adbayb/stack':
-        specifier: 1.9.0
-        version: 1.9.0
+        specifier: 1.10.0
+        version: 1.10.0
       '@adbayb/ts-config':
         specifier: 1.0.0
         version: 1.0.0(typescript@5.2.2)
-      process:
-        specifier: ^0.11.10
-        version: 0.11.10
 
   examples/react:
     dependencies:
@@ -187,8 +184,8 @@ packages:
       prettier-plugin-astro: 0.12.0
     dev: true
 
-  /@adbayb/stack@1.9.0:
-    resolution: {integrity: sha512-Qa4cAfNMx7zLhPec9KDkqR9CCeT+Tw18jb5iLyxQ24umR+5O7NjntN/wRc0MGRkvH7yEK30snuQ3LxLIpcTV5Q==}
+  /@adbayb/stack@1.10.0:
+    resolution: {integrity: sha512-4Angy/OpljeyBek1A/J2kOm1+xo4tXSuhRcZIyh18Ws6vj/Wf4FJ8GGOQ9BsI7QMzGPn8cwlqlVY6eRqGeeO7A==}
     hasBin: true
     dependencies:
       '@changesets/changelog-github': 0.4.8
@@ -5618,11 +5615,6 @@ packages:
   /proc-log@3.0.0:
     resolution: {integrity: sha512-++Vn7NS4Xf9NacaU9Xq3URUuqZETPsf8L4j5/ckhaRYsfPeRyzGw+iDjFhV/Jr3uNmTvvddEJFWh5R1gRgUH8A==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-    dev: true
-
-  /process@0.11.10:
-    resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
-    engines: {node: '>= 0.6.0'}
     dev: true
 
   /prompts@2.4.2:

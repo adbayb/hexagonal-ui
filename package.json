@@ -5,11 +5,11 @@
 	"scripts": {
 		"prepare": "stack install",
 		"clean": "stack clean",
-		"check": "turbo run check",
+		"check": "stack check",
 		"fix": "stack fix",
 		"start": "stack start",
 		"build": "stack build",
-		"watch": "stack clean && stack watch",
+		"watch": "stack watch",
 		"test": "stack test",
 		"release:log": "stack release --log",
 		"release:version": "stack release --tag",
@@ -34,8 +34,7 @@
 	"devDependencies": {
 		"@adbayb/eslint-config": "1.5.0",
 		"@adbayb/prettier-config": "1.2.0",
-		"@adbayb/stack": "1.9.0",
-		"@adbayb/ts-config": "1.0.0",
-		"process": "^0.11.10"
+		"@adbayb/stack": "1.10.0",
+		"@adbayb/ts-config": "1.0.0"
 	}
 }

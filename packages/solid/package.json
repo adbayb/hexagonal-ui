@@ -34,8 +34,7 @@
 		"start": "pnpm watch",
 		"build": "quickbundle build",
 		"watch": "quickbundle watch",
-		"test": "vitest",
-		"check": "tsc --noEmit"
+		"test": "vitest"
 	},
 	"peerDependencies": {
 		"solid-js": "^1.0.0"

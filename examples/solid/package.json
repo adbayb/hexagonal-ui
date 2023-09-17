@@ -6,8 +6,7 @@
 	"scripts": {
 		"watch": "vite",
 		"build": "tsc && vite build",
-		"start": "vite preview",
-		"check": "tsc --noEmit"
+		"start": "vite preview"
 	},
 	"dependencies": {
 		"@hexagonal-ui/solid": "workspace:^",

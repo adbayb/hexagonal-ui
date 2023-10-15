@@ -1,7 +1,7 @@
 {
 	"name": "@hexagonal-ui/vue",
 	"description": "Hexagonal UI Vue adapter",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"publishConfig": {
 		"access": "public"
 	},

@@ -43,8 +43,8 @@
 		"@hexagonal-ui/core": "workspace:^"
 	},
 	"devDependencies": {
-		"@types/react": "18.2.21",
+		"@types/react": "18.3.29",
 		"quickbundle": "1.2.0",
-		"vitest": "0.34.3"
+		"vitest": "0.34.6"
 	}
 }

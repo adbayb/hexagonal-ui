@@ -37,7 +37,7 @@
 		"test": "vitest"
 	},
 	"devDependencies": {
-		"quickbundle": "1.2.0",
-		"vitest": "0.34.3"
+		"quickbundle": "3.0.0",
+		"vitest": "4.1.7"
 	}
 }

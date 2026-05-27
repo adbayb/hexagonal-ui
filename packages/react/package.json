@@ -37,14 +37,14 @@
 		"test": "vitest"
 	},
 	"peerDependencies": {
-		"react": "^17.0.0 || ^18.0.0"
+		"react": "^17.0.0 || ^18.0.0 || ^19.0.0"
 	},
 	"dependencies": {
 		"@hexagonal-ui/core": "workspace:^"
 	},
 	"devDependencies": {
-		"@types/react": "18.2.21",
-		"quickbundle": "1.2.0",
-		"vitest": "0.34.3"
+		"@types/react": "19.2.15",
+		"quickbundle": "3.0.0",
+		"vitest": "4.1.7"
 	}
 }

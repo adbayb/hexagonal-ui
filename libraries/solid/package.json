@@ -1,0 +1,47 @@
+{
+	"name": "@hexagonal-ui/solid",
+	"version": "0.0.0",
+	"description": "Hexagonal UI Solid adapter",
+	"homepage": "https://github.com/adbayb/hexagonal-ui/tree/main/hexagonal-ui#readme",
+	"bugs": "https://github.com/adbayb/hexagonal-ui/issues",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:adbayb/hexagonal-ui.git",
+		"directory": "adapters/react"
+	},
+	"license": "MIT",
+	"author": "Ayoub Adib <adbayb@gmail.com> (https://twitter.com/adbayb)",
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"source": "./src/index.ts",
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.mjs",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "quickbundle build",
+		"start": "pnpm watch",
+		"test": "vitest",
+		"watch": "quickbundle watch"
+	},
+	"dependencies": {
+		"@hexagonal-ui/core": "workspace:^"
+	},
+	"devDependencies": {
+		"quickbundle": "3.0.0",
+		"solid-js": "1.9.13",
+		"vitest": "4.1.7"
+	},
+	"peerDependencies": {
+		"solid-js": "^1.0.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

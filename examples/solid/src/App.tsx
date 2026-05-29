@@ -1,10 +1,11 @@
 import { useButton } from "@hexagonal-ui/solid";
 
 const Button = () => {
-	const { props, children } = useButton({
+	const { children, props } = useButton({
 		children: "Hello from Solid 👋",
 	});
 
+	// eslint-disable-next-line @eslint-react/dom-no-missing-button-type
 	return <button {...props}>{children()}</button>;
 };
 

@@ -1,40 +1,41 @@
 {
-	"private": true,
+	"name": "root",
 	"version": "0.0.0",
+	"private": true,
 	"type": "module",
 	"scripts": {
-		"prepare": "stack install",
-		"clean": "stack clean",
-		"check": "stack check",
-		"fix": "stack fix",
-		"start": "stack start",
 		"build": "stack build",
-		"watch": "stack watch",
-		"test": "stack test",
+		"check": "stack check",
+		"clean": "stack clean",
+		"fix": "stack fix",
+		"install": "stack install",
 		"release:log": "stack release --log",
+		"release:publish": "stack release --publish",
 		"release:version": "stack release --tag",
-		"release:publish": "stack release --publish"
+		"start": "stack start",
+		"test": "stack test",
+		"watch": "stack watch"
 	},
-	"packageManager": "pnpm@8.15.9",
-	"engines": {
-		"node": ">=18.0.0",
-		"pnpm": ">=8.0.0",
-		"npm": "please-use-pnpm",
-		"yarn": "please-use-pnpm"
-	},
-	"prettier": "@adbayb/prettier-config",
-	"eslintConfig": {
-		"extends": "@adbayb"
-	},
-	"commitlint": {
-		"extends": [
-			"@commitlint/config-conventional"
-		]
-	},
+	"prettier": "@adbayb/stack/prettier",
 	"devDependencies": {
-		"@adbayb/eslint-config": "1.5.0",
-		"@adbayb/prettier-config": "1.2.0",
-		"@adbayb/stack": "1.10.0",
-		"@adbayb/ts-config": "1.0.0"
+		"@adbayb/stack": "2.37.0"
+	},
+	"packageManager": "pnpm@11.5.0",
+	"devEngines": {
+		"packageManager": [
+			{
+				"name": "pnpm",
+				"version": "11.5.0",
+				"onFail": "download"
+			},
+			{
+				"name": "npm"
+			}
+		],
+		"runtime": {
+			"name": "node",
+			"version": ">=24.0.0",
+			"onFail": "error"
+		}
 	}
 }

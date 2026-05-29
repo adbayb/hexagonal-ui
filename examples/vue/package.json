@@ -1,12 +1,12 @@
 {
-	"private": true,
 	"name": "@examples/vue",
 	"version": "0.0.0",
+	"private": true,
 	"type": "module",
 	"scripts": {
-		"watch": "vite",
 		"build": "tsc && vite build",
-		"start": "vite preview"
+		"start": "vite preview",
+		"watch": "vite"
 	},
 	"dependencies": {
 		"@hexagonal-ui/vue": "workspace:^",

@@ -1,1 +1,1 @@
-export {};
+export { createUseDisclosure } from "./useDisclosure";

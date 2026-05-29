@@ -89,8 +89,8 @@ There is no way for one pattern to use another (e.g., `useSelect` reusing `useBu
 **6. All tests are placeholders.**
 `expect(true).toBe(true)` exists in every test file. The biggest missed opportunity: because the core is pure TypeScript with no framework dependency, you can test full pattern logic with a **mock adapter** — no JSDOM, no React Testing Library needed.
 
-**7. `useDisclosure` is empty.**
-The pattern most needed to validate the architecture (it requires `state`, `lifecycle`, and ideally `ref`) is unimplemented.
+**7. ~~`useDisclosure` is empty.~~ ✅ Resolved**
+`useDisclosure` has been implemented. The pattern (open/close toggle + `aria-controls` + `aria-expanded`) is now available across all three adapters.
 
 **8. `PatternInputDto` unwrapping is surprising.**
 `Button.children` is typed as `State<string>` in the element definition, but the DTO strips it to `string` for input. This is correct behavior (consumers pass plain values), but having the same field be `State<string>` in one type and `string` in another with no documentation of the transformation is a source of confusion.
@@ -132,8 +132,8 @@ Define a minimal `CoreEvent` in shared types instead of picking from `globalThis
 **5. Add `ref` port.**
 `RefOutputPort = <T>() => [() => T | null, (node: T | null) => void]` — maps to `useRef` / `createSignal(null)` / `ref(null)`. Required for any pattern involving focus trapping, popover positioning, or measurements.
 
-**6. Implement `useDisclosure`.**
-This pattern (open/close/toggle + trigger/content refs) is the foundation for Dialog, Popover, Accordion, Select, and Combobox. Implementing it will stress-test all current gaps simultaneously.
+**6. ~~Implement `useDisclosure`.~~ ✅ Done**
+Implemented in `@hexagonal-ui/core` and all three adapters (React, Solid, Vue). The pattern exposes `isOpen: State<boolean>` (stateful, inlined) and `props: { aria-controls, id, onClick, role }` (stateless, spreadable).
 
 **7. Add `effect` port.**
 Reactive effects (run when state changes, not just on mount) are needed for patterns that synchronize state with external systems.

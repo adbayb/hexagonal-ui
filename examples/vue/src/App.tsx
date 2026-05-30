@@ -6,6 +6,20 @@ import {
 } from "@hexagonal-ui/vue";
 import { defineComponent } from "vue";
 
+const Section = defineComponent({
+	props: {
+		title: { required: true, type: String },
+	},
+	setup(props, { slots }) {
+		return () => (
+			<section>
+				<h2>{props.title}</h2>
+				{slots.default?.()}
+			</section>
+		);
+	},
+});
+
 const FRUITS = [
 	"Apple",
 	"Banana",
@@ -102,27 +116,52 @@ const Combobox = defineComponent({
 const Listbox = defineComponent({
 	setup() {
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
-		const listbox = useListbox({
+		const { getListboxAttributes, getOptionAttributes } = useListbox({
 			id: "vue-listbox-widget",
 			options: FRUITS,
 		});
 
-		const { getListboxAttributes, getOptionAttributes, selectedOption } =
-			listbox;
-
 		return () => (
 			<div>
-				<ul {...getListboxAttributes()}>
-					{FRUITS.map((option) => (
-						<li
-							key={option}
-							{...getOptionAttributes(option)}
-						>
-							{option}
-						</li>
-					))}
+				<ul
+					{...getListboxAttributes()}
+					style={{ listStyle: "none", padding: "0" }}
+				>
+					{FRUITS.map((option) => {
+						const attributes = getOptionAttributes(option);
+
+						return (
+							<li
+								key={option}
+								{...attributes}
+								style={{
+									alignItems: "center",
+									background: attributes["aria-selected"]
+										? "#e0f2fe"
+										: "transparent",
+									cursor: "pointer",
+									display: "flex",
+									fontWeight: attributes["aria-selected"]
+										? "bold"
+										: "normal",
+									gap: "0.5rem",
+									padding: "0.25rem 0.5rem",
+								}}
+							>
+								<span
+									style={{
+										visibility: attributes["aria-selected"]
+											? "visible"
+											: "hidden",
+									}}
+								>
+									✓
+								</span>
+								{option}
+							</li>
+						);
+					})}
 				</ul>
-				{selectedOption() && <p>Selected: {selectedOption()}</p>}
 			</div>
 		);
 	},
@@ -130,9 +169,17 @@ const Listbox = defineComponent({
 
 export const App = () => (
 	<>
-		<Button />
-		<Disclosure />
-		<Combobox />
-		<Listbox />
+		<Section title="Button">
+			<Button />
+		</Section>
+		<Section title="Disclosure">
+			<Disclosure />
+		</Section>
+		<Section title="Combobox">
+			<Combobox />
+		</Section>
+		<Section title="Listbox">
+			<Listbox />
+		</Section>
 	</>
 );

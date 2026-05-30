@@ -5,6 +5,15 @@ import {
 	useListbox,
 } from "@hexagonal-ui/react";
 
+type SectionProps = { children: React.ReactNode; title: string };
+
+const Section = ({ children, title }: SectionProps) => (
+	<section>
+		<h2>{title}</h2>
+		{children}
+	</section>
+);
+
 const FRUITS = [
 	"Apple",
 	"Banana",
@@ -80,25 +89,52 @@ const Combobox = () => {
 };
 
 const Listbox = () => {
-	const { getListboxAttributes, getOptionAttributes, selectedOption } =
-		useListbox({
-			id: "react-listbox-widget",
-			options: FRUITS,
-		});
+	const { getListboxAttributes, getOptionAttributes } = useListbox({
+		id: "react-listbox-widget",
+		options: FRUITS,
+	});
 
 	return (
 		<div>
-			<ul {...getListboxAttributes()}>
-				{FRUITS.map((option) => (
-					<li
-						key={option}
-						{...getOptionAttributes(option)}
-					>
-						{option}
-					</li>
-				))}
+			<ul
+				{...getListboxAttributes()}
+				style={{ listStyle: "none", padding: 0 }}
+			>
+				{FRUITS.map((option) => {
+					const attributes = getOptionAttributes(option);
+
+					return (
+						<li
+							key={option}
+							{...attributes}
+							style={{
+								alignItems: "center",
+								background: attributes["aria-selected"]
+									? "#e0f2fe"
+									: "transparent",
+								cursor: "pointer",
+								display: "flex",
+								fontWeight: attributes["aria-selected"]
+									? "bold"
+									: "normal",
+								gap: "0.5rem",
+								padding: "0.25rem 0.5rem",
+							}}
+						>
+							<span
+								style={{
+									visibility: attributes["aria-selected"]
+										? "visible"
+										: "hidden",
+								}}
+							>
+								✓
+							</span>
+							{option}
+						</li>
+					);
+				})}
 			</ul>
-			{selectedOption() && <p>Selected: {selectedOption()}</p>}
 		</div>
 	);
 };
@@ -106,10 +142,18 @@ const Listbox = () => {
 export const App = () => {
 	return (
 		<>
-			<Button />
-			<Disclosure />
-			<Combobox />
-			<Listbox />
+			<Section title="Button">
+				<Button />
+			</Section>
+			<Section title="Disclosure">
+				<Disclosure />
+			</Section>
+			<Section title="Combobox">
+				<Combobox />
+			</Section>
+			<Section title="Listbox">
+				<Listbox />
+			</Section>
 		</>
 	);
 };

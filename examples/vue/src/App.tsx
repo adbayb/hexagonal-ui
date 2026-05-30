@@ -121,49 +121,64 @@ const Listbox = defineComponent({
 			options: FRUITS,
 		});
 
-		return () => (
-			<div>
-				<ul
-					{...getListboxAttributes()}
-					style={{ listStyle: "none", padding: "0" }}
-				>
-					{FRUITS.map((option) => {
-						const attributes = getOptionAttributes(option);
+		return () => {
+			/*
+			 * Vue JSX's parseName uses hyphenate() to derive the DOM event name from the prop:
+			 * `onKeyDown` → hyphenate("KeyDown") → "key-down" (never fires).
+			 * `onKeydown` → hyphenate("keydown") → "keydown" (correct).
+			 * React and Solid map `onKeyDown` directly to the `keydown` event without hyphenation.
+			 * So we destructure `onKeyDown` and re-bind it as `onKeydown`.
+			 */
+			const { onKeyDown, ...listboxAttributes } = getListboxAttributes();
 
-						return (
-							<li
-								key={option}
-								{...attributes}
-								style={{
-									alignItems: "center",
-									background: attributes["aria-selected"]
-										? "#e0f2fe"
-										: "transparent",
-									cursor: "pointer",
-									display: "flex",
-									fontWeight: attributes["aria-selected"]
-										? "bold"
-										: "normal",
-									gap: "0.5rem",
-									padding: "0.25rem 0.5rem",
-								}}
-							>
-								<span
+			return (
+				<div>
+					<ul
+						{...listboxAttributes}
+						// eslint-disable-next-line @eslint-react/dom-no-unknown-property
+						onKeydown={onKeyDown}
+						style={{ listStyle: "none", padding: "0" }}
+					>
+						{FRUITS.map((option) => {
+							const attributes = getOptionAttributes(option);
+
+							return (
+								<li
+									key={option}
+									{...attributes}
 									style={{
-										visibility: attributes["aria-selected"]
-											? "visible"
-											: "hidden",
+										alignItems: "center",
+										background: attributes["aria-selected"]
+											? "#e0f2fe"
+											: "transparent",
+										cursor: "pointer",
+										display: "flex",
+										fontWeight: attributes["aria-selected"]
+											? "bold"
+											: "normal",
+										gap: "0.5rem",
+										padding: "0.25rem 0.5rem",
 									}}
 								>
-									✓
-								</span>
-								{option}
-							</li>
-						);
-					})}
-				</ul>
-			</div>
-		);
+									<span
+										style={{
+											visibility: attributes[
+												"aria-selected"
+											]
+												? "visible"
+												: "hidden",
+										}}
+									>
+										✓
+									</span>
+									{option}
+								</li>
+							);
+						})}
+					</ul>
+				</div>
+			);
+		};
 	},
 });
 

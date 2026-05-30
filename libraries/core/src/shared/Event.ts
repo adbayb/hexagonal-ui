@@ -15,3 +15,8 @@ export type Event = Pick<
 	| "timeStamp"
 	| "type"
 >;
+
+export type KeyboardEvent = Pick<
+	globalThis.KeyboardEvent,
+	"key" | "preventDefault"
+>;

@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from "../shared/Event";
 import type { Pattern } from "../shared/Pattern";
 import type { Reactive } from "../shared/types";
 
@@ -8,6 +9,7 @@ export type Listbox = Pattern<{
 	getListboxAttributes: Reactive<{
 		"aria-activedescendant": string;
 		"id": string;
+		"onKeyDown": (event: KeyboardEvent) => void;
 		"role": "listbox";
 		"tabIndex": 0;
 	}>;

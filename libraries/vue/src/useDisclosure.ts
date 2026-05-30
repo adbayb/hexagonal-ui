@@ -1,7 +1,7 @@
 import type { UnwrapRef } from "vue";
 
 import { createUseDisclosure } from "@hexagonal-ui/core";
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix
 const useStateAdapter = <Value>(initialState: Value) => {
@@ -15,7 +15,14 @@ const useStateAdapter = <Value>(initialState: Value) => {
 	] as const;
 };
 
+const computedAdapter = <Value>(function_: () => Value) => {
+	const c = computed(function_);
+
+	return () => c.value;
+};
+
 export const useDisclosure = createUseDisclosure({
+	computed: computedAdapter,
 	lifecycle: { onDestroy: onUnmounted, onMount: onMounted },
 	state: useStateAdapter,
 });

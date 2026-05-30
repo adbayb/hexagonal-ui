@@ -1,15 +1,12 @@
-import type { State } from "./types";
+import type { Reactive } from "./types";
 
-export type LifecycleOutputPort = {
+export type ComputedPort = <Value>(function_: () => Value) => Reactive<Value>;
+
+export type LifecyclePort = {
 	onDestroy: (callback: () => void) => void;
 	onMount: (callback: () => void) => void;
 };
 
-export type PatternInputPort<
-	RequestModel extends object,
-	ResponseModel extends object,
-> = (requestModel: RequestModel) => ResponseModel;
-
-export type StateOutputPort = <Value>(
+export type StatePort = <Value>(
 	initialState: Value,
-) => readonly [State<Value>, (newValue: Value) => void];
+) => readonly [Reactive<Value>, (newValue: Value) => void];

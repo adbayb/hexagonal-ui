@@ -1,6 +1,6 @@
 import type { UnwrapRef } from "vue";
 
-import { createUseButton } from "@hexagonal-ui/core";
+import { createUseCombobox } from "@hexagonal-ui/core";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 
 // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix
@@ -21,7 +21,7 @@ const computedAdapter = <Value>(function_: () => Value) => {
 	return () => c.value;
 };
 
-export const useButton = createUseButton({
+export const useCombobox = createUseCombobox({
 	computed: computedAdapter,
 	lifecycle: { onDestroy: onUnmounted, onMount: onMounted },
 	state: useStateAdapter,

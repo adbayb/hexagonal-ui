@@ -4,4 +4,4 @@ export type AnyFunction = (...arguments_: any[]) => any;
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type AnyObject = {};
 
-export type State<Value = unknown> = () => Value;
+export type Reactive<Value = unknown> = () => Value;

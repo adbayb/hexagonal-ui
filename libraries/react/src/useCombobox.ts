@@ -1,4 +1,4 @@
-import { createUseDisclosure } from "@hexagonal-ui/core";
+import { createUseCombobox } from "@hexagonal-ui/core";
 import { useEffect, useRef, useState } from "react";
 
 const useMount = (callback: () => void) => {
@@ -34,7 +34,7 @@ const useStateAdapter = <Value>(initialState: Value) => {
  */
 const computedAdapter = <Value>(function_: () => Value) => function_;
 
-export const useDisclosure = createUseDisclosure({
+export const useCombobox = createUseCombobox({
 	computed: computedAdapter,
 	lifecycle: {
 		onDestroy: useDestroy,

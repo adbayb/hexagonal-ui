@@ -1,25 +1,17 @@
-import type {
-	PatternFactory,
-	PatternInputDto,
-	PatternOutputDto,
-} from "../shared/Pattern";
+import type { PatternFactory } from "../shared/Pattern";
 import type { Button } from "./Button";
-
-type RequestModel = PatternInputDto<Pick<Button, "children">>;
-
-type ResponseModel = PatternOutputDto<
-	Pick<Button, "children" | "onClick" | "role">
->;
 
 /**
  * Button pattern factory.
  * @param input - Helpers.
+ * @param input.computed - Computed state factory.
  * @param input.lifecycle - Lifecycle functions.
  * @param input.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/button/
  * @example
  * 	const useButton = createUseButton({
+ * 		computed: computedAdapter,
  * 		lifecycle: {
  * 			onDestroy: useDestroy,
  * 			onMount: useMount,
@@ -27,10 +19,13 @@ type ResponseModel = PatternOutputDto<
  * 		state: useStateAdapter,
  * 	});
  */
-export const createUseButton: PatternFactory<RequestModel, ResponseModel> =
-	({ lifecycle, state }) =>
-	(requestModel) => {
-		const [children, setChildren] = state(requestModel.children);
+export const createUseButton: PatternFactory<
+	{ children: boolean | number | string; isDisabled: boolean },
+	Button
+> =
+	({ computed, lifecycle, state }) =>
+	(input) => {
+		const [children, setChildren] = state(input.children);
 
 		lifecycle.onMount(() => {
 			console.log("useButton mounted");
@@ -41,12 +36,15 @@ export const createUseButton: PatternFactory<RequestModel, ResponseModel> =
 		});
 
 		return {
-			children,
-			props: {
-				onClick(event) {
+			getAttributes: computed(() => ({
+				"aria-disabled": false,
+				"aria-label": String(children()),
+				"children": children(),
+				"onClick"(event) {
 					setChildren(`Mutated after ${event.type}`);
 				},
-				role: "button",
-			},
+				"role": "button",
+				"type": "button",
+			})),
 		};
 	};

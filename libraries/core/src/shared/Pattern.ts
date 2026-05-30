@@ -1,44 +1,24 @@
-import type {
-	LifecycleOutputPort,
-	PatternInputPort,
-	StateOutputPort,
-} from "./Ports";
-import type { AnyObject, State } from "./types";
-
-export type PatternFactory<
-	RequestModel extends PatternInputDto,
-	ResponseModel extends PatternOutputDto,
-> = (outputPorts: {
-	lifecycle: LifecycleOutputPort;
-	state: StateOutputPort;
-}) => PatternInputPort<RequestModel, ResponseModel>;
+import type { ComputedPort, LifecyclePort, StatePort } from "./Ports";
+import type { AnyFunction, AnyObject, Reactive } from "./types";
 
 /**
- * DTO (Data Transfer Object) interface to uniformize and ease the pattern input definition.
+ * The base entity for all elements (core object).
  */
-export type PatternInputDto<Element = AnyObject> = {
-	[Key in keyof Element]: Element[Key] extends State<infer Value>
-		? Value
-		: Element[Key];
+export type Pattern<
+	/**
+	 * Properties can be stateless or statefull (with wrapped `State` values).
+	 */
+	Props extends Record<string, Reactive<Value> | Value> = AnyObject,
+> = Props;
+
+export type PatternFactory<Input extends AnyObject, Output extends Pattern> = (
+	ports: Ports,
+) => (input: Input) => Output;
+
+export type Ports = {
+	computed: ComputedPort;
+	lifecycle: LifecyclePort;
+	state: StatePort;
 };
 
-/**
- * DTO (Data Transfer Object) interface to uniformize and ease the pattern output consumption.
- * Stateless properties are namespaced with `props` key to ease their spreading consumer side,
- * while stateful properties are inlined to ease their granular access (states are more likely to be used atomically).
- */
-export type PatternOutputDto<Element = AnyObject> = {
-	[Key in FilterStatefullKeys<Element>]: Element[Key];
-} & {
-	props: {
-		[Key in FilterStatelessKeys<Element>]: Element[Key];
-	};
-};
-
-type FilterStatefullKeys<Element> = {
-	[Key in keyof Element]: Element[Key] extends State ? Key : never;
-}[keyof Element];
-
-type FilterStatelessKeys<Element> = {
-	[Key in keyof Element]: Element[Key] extends State ? never : Key;
-}[keyof Element];
+type Value = AnyFunction | boolean | number | readonly unknown[] | string;

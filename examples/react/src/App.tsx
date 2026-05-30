@@ -1,16 +1,27 @@
-import { useButton, useDisclosure } from "@hexagonal-ui/react";
+import { useButton, useCombobox, useDisclosure } from "@hexagonal-ui/react";
+
+const FRUITS = [
+	"Apple",
+	"Banana",
+	"Cherry",
+	"Date",
+	"Elderberry",
+	"Fig",
+	"Grape",
+];
 
 const Button = () => {
-	const { children, props } = useButton({
+	const { getAttributes } = useButton({
 		children: "Hello from React 👋",
+		isDisabled: false,
 	});
 
 	// eslint-disable-next-line @eslint-react/dom-no-missing-button-type
-	return <button {...props}>{children()}</button>;
+	return <button {...getAttributes()} />;
 };
 
 const Disclosure = () => {
-	const { isOpen, props } = useDisclosure({
+	const { getTriggerAttributes, isOpen } = useDisclosure({
 		"aria-controls": "react-panel",
 		"id": "react-trigger",
 	});
@@ -18,10 +29,7 @@ const Disclosure = () => {
 	return (
 		<div>
 			{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-			<button
-				{...props}
-				aria-expanded={isOpen()}
-			>
+			<button {...getTriggerAttributes()}>
 				{isOpen() ? "Hide" : "Show"} content
 			</button>
 			{isOpen() && (
@@ -31,11 +39,47 @@ const Disclosure = () => {
 	);
 };
 
+const Combobox = () => {
+	const {
+		filteredOptions,
+		getInputAttributes,
+		getOptionAttributes,
+		isOpen,
+		selectedValue,
+	} = useCombobox({
+		"aria-controls": "react-listbox",
+		"options": FRUITS,
+	});
+
+	return (
+		<div>
+			<input {...getInputAttributes()} />
+			{isOpen() && (
+				<ul
+					id="react-listbox"
+					role="listbox"
+				>
+					{filteredOptions().map((option) => (
+						<li
+							key={option}
+							{...getOptionAttributes(option)}
+						>
+							{option}
+						</li>
+					))}
+				</ul>
+			)}
+			{selectedValue() && <p>Selected: {selectedValue()}</p>}
+		</div>
+	);
+};
+
 export const App = () => {
 	return (
 		<>
 			<Button />
 			<Disclosure />
+			<Combobox />
 		</>
 	);
 };

@@ -30,8 +30,19 @@
 **2. Port design matches the reactive primitive shape.**
 `State<V> = () => V` (a getter function) works uniformly across React closures, Solid signals, and Vue refs. The `StateOutputPort` returns `[getter, setter]`, which maps directly to `createSignal`, `useState`, and `ref`.
 
-**3. `PatternOutputDto` splits stateful vs stateless.**
-Stateful properties (state getters) are inlined for granular access; stateless props are namespaced under `props` for easy spreading onto DOM elements. This is genuinely ergonomic.
+**3. `PatternOutputDto` splits stateful vs stateless.** ~~Stateful properties (state getters) are inlined for granular access; stateless props are namespaced under `props` for easy spreading onto DOM elements. This is genuinely ergonomic.~~
+
+Updated: Patterns now expose **semantic prop groups** as `State<PropsObject>` getters (e.g., `triggerProps`, `getInputProps`) computed via the `computed` port. ARIA implementation details no longer leak to consumers — spreading a single call is sufficient:
+
+```tsx
+// Before
+<button {...props} aria-expanded={isOpen()}>
+
+// After
+<button {...triggerProps()}>
+```
+
+`PatternFactory`'s `ResponseModel` constraint is now `extends object` (was `extends PatternOutputDto`), allowing patterns to define their own ergonomic output shapes. `useButton` still uses `PatternOutputDto` as it is a simpler stateless-dominant pattern.
 
 **4. Solid adapter proves the model is sound.**
 Solid's `createSignal`, `onMount`, `onCleanup` map 1:1 to ports — the adapter is 5 lines with no wrappers. When the simplest adapter requires no translation layer, the ports are well designed.
@@ -43,25 +54,21 @@ Turborepo task ordering (`^build` dependency), workspace protocol, and `sideEffe
 
 ## Weaknesses
 
-**1. `View.role` is too narrow and semantically conflated.**
+**1. ~~`View.role` is too narrow and semantically conflated.~~ ✅ Resolved**
 
-```ts
-// Current: hardcoded union
-type View<Role extends "button" | "link", ...>
-```
-
-Every new element type requires editing this union. More critically, it conflates the HTML _element role_ (what element to render) with the ARIA _role attribute_ (accessibility semantics). A `<div role="button">` and `<button>` are different use cases.
+`Role` is now `extends string`, removing the hardcoded `"button" | "link"` union. New element types (e.g., `"combobox"`) no longer require touching the base `View` type. The HTML-role vs ARIA-role distinction remains a documentation concern.
 
 **2. The `PatternFactory` ports are too few.**
 
-Today: `{ lifecycle, state }`. Missing:
+Today: `{ lifecycle, state, computed }` (✅ `computed` added). Still missing:
 
-- **`computed`/`memo`** — for derived reactive values (e.g., disabled state derived from loading + error)
 - **`ref`** — DOM node access for focus management, floating positioning, measurements
 - **`effect`** — reactive side effects (distinct from mount/destroy lifecycle)
 - **`context`** — theming tokens, i18n, direction (RTL)
 
-Without these, any non-trivial pattern (Combobox, Dialog, DatePicker) will hit a wall.
+Without `ref` and `effect`, deeply interactive patterns (Dialog with focus trap, DatePicker) will hit a wall.
+
+The `PatternFactory` type is now generic over its ports (`PatternFactory<Req, Res, Ports>`), so patterns declare only the ports they need — no breaking changes to existing factories.
 
 **3. React adapter requires callback-stabilization boilerplate that other adapters don't.**
 
@@ -118,11 +125,11 @@ There is no way for one pattern to use another (e.g., `useSelect` reusing `useBu
 **1. Test patterns with mock adapters.**
 Write a `createMockAdapter()` utility in `core` that provides in-memory state/lifecycle stubs. This validates pattern logic in pure unit tests and demonstrates the architecture's value.
 
-**2. Add `computed` port.**
-Most patterns need derived state. A `computed: <V>(fn: () => V) => State<V>` port maps to React's `useMemo`, Solid's `createMemo`, and Vue's `computed`.
+**2. ~~Add `computed` port.~~ ✅ Done**
+`ComputedOutputPort = <V>(fn: () => V) => State<V>` added to `Ports.ts`. `PatternFactory` is now generic over ports (`PatternFactory<Req, Res, Ports>`), so `createUseCombobox` declares `Ports = DefaultPorts & { computed: ComputedOutputPort }` without affecting existing factories. Adapters: React uses a closure pass-through, Solid uses `createMemo`, Vue uses `computed`.
 
-**3. Open `View.role`.**
-Change `Role extends "button" | "link"` to `Role extends string` or move the constraint to a separate ARIA role type.
+**3. ~~Open `View.role`.~~ ✅ Done**
+Changed to `Role extends string`. See Weakness #1 above.
 
 **4. Abstract `Event`.**
 Define a minimal `CoreEvent` in shared types instead of picking from `globalThis.Event`.
@@ -157,4 +164,4 @@ For a Combobox or DatePicker, a state machine (even a minimal one) is more maint
 
 ## Summary
 
-The core insight — that UI interaction logic is framework-agnostic and can be expressed through typed ports — is **correct and well executed**. The `PatternFactory` pattern is clean. The main architectural risk is that the current port set (`lifecycle + state`) covers only the simplest patterns. The jump from `useButton` to `useCombobox` requires `computed`, `ref`, `effect`, and composition — none of which are currently designed. The architecture should be validated by implementing one genuinely complex pattern (Disclosure or Select) before expanding the component catalog.
+The core insight — that UI interaction logic is framework-agnostic and can be expressed through typed ports — is **correct and well executed**. The `PatternFactory` pattern is clean and now generic over its port set. Three patterns are implemented (`useButton`, `useDisclosure`, `useCombobox`) across all adapters. The remaining gap before tackling highly interactive patterns (Dialog with focus trap, DatePicker) is the `ref` and `effect` ports.

@@ -1,16 +1,16 @@
-import type { Event } from "../shared/Event";
-import type { State } from "../shared/types";
-import type { View } from "../shared/View";
+import type { Pattern } from "../shared/Pattern";
+import type { Reactive } from "../shared/types";
 
 /**
- * Disclosure element (trigger).
+ * Disclosure element.
  */
-export type Disclosure = View<
-	"button",
-	{
+export type Disclosure = Pattern<{
+	getTriggerAttributes: Reactive<{
 		"aria-controls": string;
+		"aria-expanded": boolean;
 		"id": string;
-		"isOpen": State<boolean>;
-		"onClick": (event: Event) => void;
-	}
->;
+		"onClick": () => void;
+		"role": "button";
+	}>;
+	isOpen: Reactive<boolean>;
+}>;

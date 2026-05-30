@@ -1,24 +1,16 @@
-import type {
-	PatternFactory,
-	PatternInputDto,
-	PatternOutputDto,
-} from "../shared/Pattern";
+import type { PatternFactory } from "../shared/Pattern";
 import type { Disclosure } from "./Disclosure";
-
-type RequestModel = PatternInputDto<Pick<Disclosure, "aria-controls" | "id">>;
-
-type ResponseModel = PatternOutputDto<
-	Pick<Disclosure, "aria-controls" | "id" | "isOpen" | "onClick" | "role">
->;
 
 /**
  * Disclosure pattern factory.
  * @param input - Helpers.
+ * @param input.computed - Computed state factory.
  * @param input.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
  * @example
  * 	const useDisclosure = createUseDisclosure({
+ * 		computed: computedAdapter,
  * 		lifecycle: {
  * 			onDestroy: useDestroy,
  * 			onMount: useMount,
@@ -26,20 +18,24 @@ type ResponseModel = PatternOutputDto<
  * 		state: useStateAdapter,
  * 	});
  */
-export const createUseDisclosure: PatternFactory<RequestModel, ResponseModel> =
-	({ state }) =>
-	(requestModel) => {
+export const createUseDisclosure: PatternFactory<
+	{ "aria-controls": string; "id": string },
+	Disclosure
+> =
+	({ computed, state }) =>
+	(input) => {
 		const [isOpen, setIsOpen] = state(false);
 
 		return {
-			isOpen,
-			props: {
-				"aria-controls": requestModel["aria-controls"],
-				"id": requestModel.id,
+			getTriggerAttributes: computed(() => ({
+				"aria-controls": input["aria-controls"],
+				"aria-expanded": isOpen(),
+				"id": input.id,
 				"onClick"() {
 					setIsOpen(!isOpen());
 				},
-				"role": "button",
-			},
+				"role": "button" as const,
+			})),
+			isOpen,
 		};
 	};

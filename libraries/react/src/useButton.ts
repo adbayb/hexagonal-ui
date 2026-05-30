@@ -28,7 +28,10 @@ const useStateAdapter = <Value>(initialState: Value) => {
 	] as const;
 };
 
+const computedAdapter = <Value>(function_: () => Value) => function_;
+
 export const useButton = createUseButton({
+	computed: computedAdapter,
 	lifecycle: {
 		onDestroy: useDestroy,
 		onMount: useMount,

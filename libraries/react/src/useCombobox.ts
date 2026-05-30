@@ -1,44 +1,5 @@
 import { createUseCombobox } from "@hexagonal-ui/core";
-import { useEffect, useRef, useState } from "react";
 
-const useMount = (callback: () => void) => {
-	const callbackRef = useRef(callback);
+import { ports } from "./adapters";
 
-	useEffect(() => {
-		callbackRef.current();
-	}, []);
-};
-
-const useDestroy = (callback: () => void) => {
-	const callbackRef = useRef(callback);
-
-	useEffect(() => {
-		return callbackRef.current;
-	}, []);
-};
-
-const useStateAdapter = <Value>(initialState: Value) => {
-	const [value, setValue] = useState(initialState);
-
-	return [
-		() => value,
-		(newValue: Value) => {
-			setValue(newValue);
-		},
-	] as const;
-};
-
-/*
- * In React, the hook re-runs on every render so fn already captures current
- * state values via closure — no memoization needed for correctness.
- */
-const computedAdapter = <Value>(function_: () => Value) => function_;
-
-export const useCombobox = createUseCombobox({
-	computed: computedAdapter,
-	lifecycle: {
-		onDestroy: useDestroy,
-		onMount: useMount,
-	},
-	state: useStateAdapter,
-});
+export const useCombobox = createUseCombobox(ports);

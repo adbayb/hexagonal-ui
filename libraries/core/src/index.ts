@@ -1,4 +1,5 @@
-export * from "./useButton";
-export * from "./useCombobox";
-export * from "./useDisclosure";
-export * from "./useListbox";
+export type { Ports } from "./shared/Pattern";
+export { createUseButton } from "./useButton";
+export { createUseCombobox } from "./useCombobox";
+export { createUseDisclosure } from "./useDisclosure";
+export { createUseListbox } from "./useListbox";

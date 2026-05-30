@@ -34,7 +34,7 @@ export const createUseDisclosure: PatternFactory<
 				"onClick"() {
 					setIsOpen(!isOpen());
 				},
-				"role": "button" as const,
+				"role": "button",
 			})),
 			isOpen,
 		};

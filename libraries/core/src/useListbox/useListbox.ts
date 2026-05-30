@@ -95,7 +95,7 @@ export const createUseListbox: PatternFactory<
 				"onClick"() {
 					setSelectedOption(value);
 				},
-				"role": "option" as const,
+				"role": "option",
 			}),
 			selectedOption,
 		};

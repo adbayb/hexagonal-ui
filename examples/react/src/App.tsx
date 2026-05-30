@@ -3,6 +3,8 @@ import {
 	useCombobox,
 	useDisclosure,
 	useListbox,
+	useMenu,
+	useMenubar,
 } from "@hexagonal-ui/react";
 
 type SectionProps = { children: React.ReactNode; title: string };
@@ -139,6 +141,97 @@ const Listbox = () => {
 	);
 };
 
+const ACTIONS = ["Copy", "Cut", "Paste", "Delete"];
+const NAV_ITEMS = ["File", "Edit", "View", "Help"];
+
+const Menu = () => {
+	const {
+		getMenuAttributes,
+		getMenuItemAttributes,
+		getTriggerAttributes,
+		isOpen,
+	} = useMenu({
+		id: "react-menu",
+		items: ACTIONS,
+		triggerId: "react-menu-trigger",
+	});
+
+	return (
+		<div style={{ position: "relative" }}>
+			{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
+			<button {...getTriggerAttributes()}>Actions ▾</button>
+			{isOpen() && (
+				<ul
+					{...getMenuAttributes()}
+					style={{
+						background: "#fff",
+						border: "1px solid #ccc",
+						listStyle: "none",
+						margin: 0,
+						padding: "0.25rem 0",
+						position: "absolute",
+					}}
+				>
+					{ACTIONS.map((action) => (
+						<li
+							key={action}
+							{...getMenuItemAttributes(action)}
+							style={{
+								cursor: "pointer",
+								padding: "0.25rem 1rem",
+							}}
+						>
+							{action}
+						</li>
+					))}
+				</ul>
+			)}
+		</div>
+	);
+};
+
+const Menubar = () => {
+	const { activeItem, getMenubarAttributes, getMenuItemAttributes } =
+		useMenubar({
+			id: "react-menubar",
+			items: NAV_ITEMS,
+		});
+
+	return (
+		<ul
+			{...getMenubarAttributes()}
+			style={{
+				display: "flex",
+				gap: "0.25rem",
+				listStyle: "none",
+				padding: 0,
+			}}
+		>
+			{NAV_ITEMS.map((item) => (
+				<li key={item}>
+					{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
+					<button
+						{...getMenuItemAttributes(item)}
+						style={{
+							background:
+								activeItem() === item
+									? "#e0f2fe"
+									: "transparent",
+							border: "none",
+							cursor: "pointer",
+							fontWeight:
+								activeItem() === item ? "bold" : "normal",
+							padding: "0.25rem 0.75rem",
+						}}
+					>
+						{item}
+					</button>
+				</li>
+			))}
+		</ul>
+	);
+};
+
 export const App = () => {
 	return (
 		<>
@@ -153,6 +246,12 @@ export const App = () => {
 			</Section>
 			<Section title="Listbox">
 				<Listbox />
+			</Section>
+			<Section title="Menu">
+				<Menu />
+			</Section>
+			<Section title="Menubar">
+				<Menubar />
 			</Section>
 		</>
 	);

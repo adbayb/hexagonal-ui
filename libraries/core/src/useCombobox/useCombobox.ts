@@ -64,7 +64,7 @@ export const createUseCombobox: PatternFactory<
 					setSelectedOption(value);
 					setIsOpen(false);
 				},
-				"role": "option" as const,
+				"role": "option",
 			}),
 			isOpen,
 			selectedOption,

@@ -3,6 +3,8 @@ import {
 	useCombobox,
 	useDisclosure,
 	useListbox,
+	useMenu,
+	useMenubar,
 } from "@hexagonal-ui/vue";
 import { defineComponent } from "vue";
 
@@ -182,6 +184,123 @@ const Listbox = defineComponent({
 	},
 });
 
+const ACTIONS = ["Copy", "Cut", "Paste", "Delete"];
+const NAV_ITEMS = ["File", "Edit", "View", "Help"];
+
+const Menu = defineComponent({
+	setup() {
+		// eslint-disable-next-line @eslint-react/rules-of-hooks
+		const menu = useMenu({
+			id: "vue-menu",
+			items: ACTIONS,
+			triggerId: "vue-menu-trigger",
+		});
+
+		const {
+			getMenuAttributes,
+			getMenuItemAttributes,
+			getTriggerAttributes,
+			isOpen,
+		} = menu;
+
+		return () => {
+			const { onKeyDown: onMenuKeyDown, ...menuAttributes } =
+				getMenuAttributes();
+
+			return (
+				<div style={{ position: "relative" }}>
+					{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
+					<button {...getTriggerAttributes()}>Actions ▾</button>
+					{isOpen() && (
+						<ul
+							{...menuAttributes}
+							// eslint-disable-next-line @eslint-react/dom-no-unknown-property
+							onKeydown={onMenuKeyDown}
+							style={{
+								background: "#fff",
+								border: "1px solid #ccc",
+								listStyle: "none",
+								margin: "0",
+								padding: "0.25rem 0",
+								position: "absolute",
+							}}
+						>
+							{ACTIONS.map((action) => (
+								<li
+									key={action}
+									{...getMenuItemAttributes(action)}
+									style={{
+										cursor: "pointer",
+										padding: "0.25rem 1rem",
+									}}
+								>
+									{action}
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+			);
+		};
+	},
+});
+
+const Menubar = defineComponent({
+	setup() {
+		// eslint-disable-next-line @eslint-react/rules-of-hooks
+		const menubar = useMenubar({
+			id: "vue-menubar",
+			items: NAV_ITEMS,
+		});
+
+		const { activeItem, getMenubarAttributes, getMenuItemAttributes } =
+			menubar;
+
+		return () => (
+			<ul
+				{...getMenubarAttributes()}
+				style={{
+					display: "flex",
+					gap: "0.25rem",
+					listStyle: "none",
+					padding: "0",
+				}}
+			>
+				{NAV_ITEMS.map((item) => {
+					const { onKeyDown: onItemKeyDown, ...itemAttributes } =
+						getMenuItemAttributes(item);
+
+					return (
+						<li key={item}>
+							{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
+							<button
+								{...itemAttributes}
+								// eslint-disable-next-line @eslint-react/dom-no-unknown-property
+								onKeydown={onItemKeyDown}
+								style={{
+									background:
+										activeItem() === item
+											? "#e0f2fe"
+											: "transparent",
+									border: "none",
+									cursor: "pointer",
+									fontWeight:
+										activeItem() === item
+											? "bold"
+											: "normal",
+									padding: "0.25rem 0.75rem",
+								}}
+							>
+								{item}
+							</button>
+						</li>
+					);
+				})}
+			</ul>
+		);
+	},
+});
+
 export const App = () => (
 	<>
 		<Section title="Button">
@@ -195,6 +314,12 @@ export const App = () => (
 		</Section>
 		<Section title="Listbox">
 			<Listbox />
+		</Section>
+		<Section title="Menu">
+			<Menu />
+		</Section>
+		<Section title="Menubar">
+			<Menubar />
 		</Section>
 	</>
 );

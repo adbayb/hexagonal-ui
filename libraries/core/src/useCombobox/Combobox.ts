@@ -23,5 +23,5 @@ export type Combobox = Pattern<{
 		"role": "option";
 	};
 	isOpen: Reactive<boolean>;
-	selectedValue: Reactive<string>;
+	selectedOption: Reactive<string>;
 }>;

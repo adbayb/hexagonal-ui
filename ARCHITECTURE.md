@@ -99,7 +99,16 @@ There is no way for one pattern to use another (e.g., `useSelect` reusing `useBu
 **7. ~~`useDisclosure` is empty.~~ ✅ Resolved**
 `useDisclosure` has been implemented. The pattern (open/close toggle + `aria-controls` + `aria-expanded`) is now available across all three adapters.
 
-**8. `PatternInputDto` unwrapping is surprising.**
+**8. `useListbox` added. ✅**
+`useListbox` implements the WAI-ARIA [Listbox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/). It exposes:
+
+- `getListboxAttributes()` — `{ role: "listbox", id, tabIndex: 0, aria-activedescendant }` (tracks selected option)
+- `getOptionAttributes(value)` — `{ role: "option", id, aria-selected, onClick }`
+- `selectedOption` — reactive read of the current selection
+
+Option IDs are derived as `${id}-${value}`, keeping the factory self-contained with no DOM access needed.
+
+**9. `PatternInputDto` unwrapping is surprising.**
 `Button.children` is typed as `State<string>` in the element definition, but the DTO strips it to `string` for input. This is correct behavior (consumers pass plain values), but having the same field be `State<string>` in one type and `string` in another with no documentation of the transformation is a source of confusion.
 
 ---

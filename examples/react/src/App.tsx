@@ -1,4 +1,9 @@
-import { useButton, useCombobox, useDisclosure } from "@hexagonal-ui/react";
+import {
+	useButton,
+	useCombobox,
+	useDisclosure,
+	useListbox,
+} from "@hexagonal-ui/react";
 
 const FRUITS = [
 	"Apple",
@@ -45,7 +50,7 @@ const Combobox = () => {
 		getInputAttributes,
 		getOptionAttributes,
 		isOpen,
-		selectedValue,
+		selectedOption,
 	} = useCombobox({
 		"aria-controls": "react-listbox",
 		"options": FRUITS,
@@ -69,7 +74,31 @@ const Combobox = () => {
 					))}
 				</ul>
 			)}
-			{selectedValue() && <p>Selected: {selectedValue()}</p>}
+			{selectedOption() && <p>Selected: {selectedOption()}</p>}
+		</div>
+	);
+};
+
+const Listbox = () => {
+	const { getListboxAttributes, getOptionAttributes, selectedOption } =
+		useListbox({
+			id: "react-listbox-widget",
+			options: FRUITS,
+		});
+
+	return (
+		<div>
+			<ul {...getListboxAttributes()}>
+				{FRUITS.map((option) => (
+					<li
+						key={option}
+						{...getOptionAttributes(option)}
+					>
+						{option}
+					</li>
+				))}
+			</ul>
+			{selectedOption() && <p>Selected: {selectedOption()}</p>}
 		</div>
 	);
 };
@@ -80,6 +109,7 @@ export const App = () => {
 			<Button />
 			<Disclosure />
 			<Combobox />
+			<Listbox />
 		</>
 	);
 };

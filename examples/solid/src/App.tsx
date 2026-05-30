@@ -1,4 +1,9 @@
-import { useButton, useCombobox, useDisclosure } from "@hexagonal-ui/solid";
+import {
+	useButton,
+	useCombobox,
+	useDisclosure,
+	useListbox,
+} from "@hexagonal-ui/solid";
 
 const FRUITS = [
 	"Apple",
@@ -45,7 +50,7 @@ const Combobox = () => {
 		getInputAttributes,
 		getOptionAttributes,
 		isOpen,
-		selectedValue,
+		selectedOption,
 	} = useCombobox({
 		"aria-controls": "solid-listbox",
 		"options": FRUITS,
@@ -65,7 +70,27 @@ const Combobox = () => {
 					))}
 				</ul>
 			)}
-			{selectedValue() && <p>Selected: {selectedValue()}</p>}
+			{selectedOption() && <p>Selected: {selectedOption()}</p>}
+		</div>
+	);
+};
+
+const Listbox = () => {
+	const { getListboxAttributes, getOptionAttributes, selectedOption } =
+		useListbox({
+			id: "solid-listbox-widget",
+			options: FRUITS,
+		});
+
+	return (
+		<div>
+			<ul {...getListboxAttributes()}>
+				{FRUITS.map((option) => (
+					// eslint-disable-next-line @eslint-react/no-missing-key
+					<li {...getOptionAttributes(option)}>{option}</li>
+				))}
+			</ul>
+			{selectedOption() && <p>Selected: {selectedOption()}</p>}
 		</div>
 	);
 };
@@ -76,6 +101,7 @@ export const App = () => {
 			<Button />
 			<Disclosure />
 			<Combobox />
+			<Listbox />
 		</>
 	);
 };

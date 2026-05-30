@@ -27,7 +27,7 @@ export const createUseCombobox: PatternFactory<
 	(input) => {
 		const [inputValue, setInputValue] = state("");
 		const [isOpen, setIsOpen] = state(false);
-		const [selectedValue, setSelectedValue] = state("");
+		const [selectedOption, setSelectedOption] = state("");
 
 		const filteredOptions = computed(() =>
 			input.options.filter((option) =>
@@ -59,14 +59,14 @@ export const createUseCombobox: PatternFactory<
 				"value": inputValue(),
 			})),
 			getOptionAttributes: (value: string) => ({
-				"aria-selected": value === selectedValue(),
+				"aria-selected": value === selectedOption(),
 				"onClick"() {
-					setSelectedValue(value);
+					setSelectedOption(value);
 					setIsOpen(false);
 				},
 				"role": "option" as const,
 			}),
 			isOpen,
-			selectedValue,
+			selectedOption,
 		};
 	};

@@ -1,4 +1,9 @@
-import { useButton, useCombobox, useDisclosure } from "@hexagonal-ui/vue";
+import {
+	useButton,
+	useCombobox,
+	useDisclosure,
+	useListbox,
+} from "@hexagonal-ui/vue";
 import { defineComponent } from "vue";
 
 const FRUITS = [
@@ -67,7 +72,7 @@ const Combobox = defineComponent({
 			getInputAttributes,
 			getOptionAttributes,
 			isOpen,
-			selectedValue,
+			selectedOption,
 		} = combobox;
 
 		return () => (
@@ -88,7 +93,36 @@ const Combobox = defineComponent({
 						))}
 					</ul>
 				)}
-				{selectedValue() && <p>Selected: {selectedValue()}</p>}
+				{selectedOption() && <p>Selected: {selectedOption()}</p>}
+			</div>
+		);
+	},
+});
+
+const Listbox = defineComponent({
+	setup() {
+		// eslint-disable-next-line @eslint-react/rules-of-hooks
+		const listbox = useListbox({
+			id: "vue-listbox-widget",
+			options: FRUITS,
+		});
+
+		const { getListboxAttributes, getOptionAttributes, selectedOption } =
+			listbox;
+
+		return () => (
+			<div>
+				<ul {...getListboxAttributes()}>
+					{FRUITS.map((option) => (
+						<li
+							key={option}
+							{...getOptionAttributes(option)}
+						>
+							{option}
+						</li>
+					))}
+				</ul>
+				{selectedOption() && <p>Selected: {selectedOption()}</p>}
 			</div>
 		);
 	},
@@ -99,5 +133,6 @@ export const App = () => (
 		<Button />
 		<Disclosure />
 		<Combobox />
+		<Listbox />
 	</>
 );

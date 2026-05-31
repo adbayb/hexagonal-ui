@@ -1,5 +1,5 @@
 import { createUseListbox } from "@hexagonal-ui/core";
 
-import { ports } from "./adapters";
+import { frameworkAdapter } from "./adapters";
 
-export const useListbox = createUseListbox(ports);
+export const useListbox = createUseListbox(frameworkAdapter);

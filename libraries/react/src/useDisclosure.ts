@@ -1,5 +1,5 @@
 import { createUseDisclosure } from "@hexagonal-ui/core";
 
-import { ports } from "./adapters";
+import { frameworkAdapter } from "./adapters";
 
-export const useDisclosure = createUseDisclosure(ports);
+export const useDisclosure = createUseDisclosure(frameworkAdapter);

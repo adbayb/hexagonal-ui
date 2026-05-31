@@ -1,4 +1,4 @@
-export type { Ports } from "./shared/Pattern";
+export type { FrameworkPort } from "./shared/Port";
 export { createUseButton } from "./useButton";
 export type { UseButtonInput, UseButtonOutput } from "./useButton";
 export { createUseCombobox } from "./useCombobox";

@@ -1,5 +1,5 @@
 import { createUseCombobox } from "@hexagonal-ui/core";
 
-import { ports } from "./adapters";
+import { frameworkAdapter } from "./adapters";
 
-export const useCombobox = createUseCombobox(ports);
+export const useCombobox = createUseCombobox(frameworkAdapter);

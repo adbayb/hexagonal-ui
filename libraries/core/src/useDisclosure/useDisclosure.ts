@@ -32,20 +32,19 @@ export type UseDisclosureOutput = {
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
  * @example
  * 	const useDisclosure = createUseDisclosure({
- * 		computed: computedAdapter,
+ * 		computed,
  * 		lifecycle: {
- * 			onDestroy: useDestroy,
- * 			onMount: useMount,
+ * 			onDestroy,
+ * 			onMount,
  * 		},
- * 		state: useStateAdapter,
+ * 		state,
  * 	});
  */
 export const createUseDisclosure: PatternFactory<
 	UseDisclosureInput,
 	UseDisclosureOutput
-> =
-	({ computed, state }) =>
-	(input) => {
+> = ({ computed, state }) => {
+	return (input) => {
 		const [isOpen, setIsOpen] = state(false);
 
 		return {
@@ -61,3 +60,4 @@ export const createUseDisclosure: PatternFactory<
 			isOpen,
 		};
 	};
+};

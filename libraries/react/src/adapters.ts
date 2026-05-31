@@ -1,8 +1,8 @@
-import type { Ports } from "@hexagonal-ui/core";
+import type { FrameworkPort } from "@hexagonal-ui/core";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState as useStateReact } from "react";
 
-export const useMount = (callback: () => void) => {
+const useMount: FrameworkPort["lifecycle"]["onMount"] = (callback) => {
 	const callbackRef = useRef(callback);
 
 	useEffect(() => {
@@ -10,7 +10,7 @@ export const useMount = (callback: () => void) => {
 	}, []);
 };
 
-export const useDestroy = (callback: () => void) => {
+const useDestroy: FrameworkPort["lifecycle"]["onDestroy"] = (callback) => {
 	const callbackRef = useRef(callback);
 
 	useEffect(() => {
@@ -18,12 +18,12 @@ export const useDestroy = (callback: () => void) => {
 	}, []);
 };
 
-export const useStateAdapter = <Value>(initialState: Value) => {
-	const [value, setValue] = useState(initialState);
+const useState: FrameworkPort["state"] = (initialState) => {
+	const [value, setValue] = useStateReact(initialState);
 
 	return [
 		() => value,
-		(newValue: Value) => {
+		(newValue) => {
 			setValue(newValue);
 		},
 	] as const;
@@ -33,13 +33,13 @@ export const useStateAdapter = <Value>(initialState: Value) => {
  * In React, the hook re-runs on every render so fn already captures current
  * state values via closure — no memoization needed for correctness.
  */
-export const computedAdapter = <Value>(function_: () => Value) => function_;
+const computed: FrameworkPort["computed"] = (function_) => function_;
 
-export const ports: Ports = {
-	computed: computedAdapter,
+export const frameworkAdapter: FrameworkPort = {
+	computed,
 	lifecycle: {
 		onDestroy: useDestroy,
 		onMount: useMount,
 	},
-	state: useStateAdapter,
+	state: useState,
 };

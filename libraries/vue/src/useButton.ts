@@ -1,5 +1,5 @@
 import { createUseButton } from "@hexagonal-ui/core";
 
-import { ports } from "./adapters";
+import { frameworkAdapter } from "./adapters";
 
-export const useButton = createUseButton(ports);
+export const useButton = createUseButton(frameworkAdapter);

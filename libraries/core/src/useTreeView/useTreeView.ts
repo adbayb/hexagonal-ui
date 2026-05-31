@@ -46,20 +46,19 @@ export type UseTreeViewOutput = {
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/treeview/
  * @example
  * 	const useTreeView = createUseTreeView({
- * 		computed: computedAdapter,
+ * 		computed,
  * 		lifecycle: {
- * 			onDestroy: useDestroy,
- * 			onMount: useMount,
+ * 			onDestroy,
+ * 			onMount,
  * 		},
- * 		state: useStateAdapter,
+ * 		state,
  * 	});
  */
 export const createUseTreeView: PatternFactory<
 	UseTreeViewInput,
 	UseTreeViewOutput
-> =
-	({ computed, state }) =>
-	(input) => {
+> = ({ computed, state }) => {
+	return (input) => {
 		const [activeItem, setActiveItem] = state(input.items.at(0)?.id ?? "");
 		const [selectedItem, setSelectedItem] = state("");
 		const [expandedItems, setExpandedItems] = state<string[]>([]);
@@ -195,6 +194,7 @@ export const createUseTreeView: PatternFactory<
 			selectedItem,
 		};
 	};
+};
 
 /**
  * A single node in the tree. Children make a branch; absence makes a leaf.

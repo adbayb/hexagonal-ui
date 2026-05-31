@@ -44,20 +44,19 @@ export type UseComboboxOutput = {
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/combobox/
  * @example
  * 	const useCombobox = createUseCombobox({
- * 		computed: computedAdapter,
+ * 		computed,
  * 		lifecycle: {
- * 			onDestroy: useDestroy,
- * 			onMount: useMount,
+ * 			onDestroy,
+ * 			onMount,
  * 		},
- * 		state: useStateAdapter,
+ * 		state,
  * 	});
  */
 export const createUseCombobox: PatternFactory<
 	UseComboboxInput,
 	UseComboboxOutput
-> =
-	({ computed, state }) =>
-	(input) => {
+> = ({ computed, state }) => {
+	return (input) => {
 		const [inputValue, setInputValue] = state("");
 		const [isOpen, setIsOpen] = state(false);
 		const [selectedOption, setSelectedOption] = state("");
@@ -103,3 +102,4 @@ export const createUseCombobox: PatternFactory<
 			selectedOption,
 		};
 	};
+};

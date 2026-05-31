@@ -34,17 +34,19 @@ export type UseButtonOutput = {
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/button/
  * @example
  * 	const useButton = createUseButton({
- * 		computed: computedAdapter,
+ * 		computed,
  * 		lifecycle: {
- * 			onDestroy: useDestroy,
- * 			onMount: useMount,
+ * 			onDestroy,
+ * 			onMount,
  * 		},
- * 		state: useStateAdapter,
+ * 		state,
  * 	});
  */
-export const createUseButton: PatternFactory<UseButtonInput, UseButtonOutput> =
-	({ computed, lifecycle, state }) =>
-	(input) => {
+export const createUseButton: PatternFactory<
+	UseButtonInput,
+	UseButtonOutput
+> = ({ computed, lifecycle, state }) => {
+	return (input) => {
 		const [children, setChildren] = state(input.children);
 
 		lifecycle.onMount(() => {
@@ -68,3 +70,4 @@ export const createUseButton: PatternFactory<UseButtonInput, UseButtonOutput> =
 			})),
 		};
 	};
+};

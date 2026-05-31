@@ -1,5 +1,5 @@
 import { createUseMenu } from "@hexagonal-ui/core";
 
-import { ports } from "./adapters";
+import { frameworkAdapter } from "./adapters";
 
-export const useMenu = createUseMenu(ports);
+export const useMenu = createUseMenu(frameworkAdapter);

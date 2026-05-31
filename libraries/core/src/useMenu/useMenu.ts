@@ -51,17 +51,19 @@ export type UseMenuOutput = {
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/menu/
  * @example
  * 	const useMenu = createUseMenu({
- * 		computed: computedAdapter,
+ * 		computed,
  * 		lifecycle: {
- * 			onDestroy: useDestroy,
- * 			onMount: useMount,
+ * 			onDestroy,
+ * 			onMount,
  * 		},
- * 		state: useStateAdapter,
+ * 		state,
  * 	});
  */
-export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> =
-	({ computed, state }) =>
-	(input) => {
+export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> = ({
+	computed,
+	state,
+}) => {
+	return (input) => {
 		const [isOpen, setIsOpen] = state(false);
 		const [activeItem, setActiveItem] = state("");
 		const itemId = (item: string) => `${input.id}-${item}`;
@@ -191,6 +193,7 @@ export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> =
 			isOpen,
 		};
 	};
+};
 
 const navigateNext = (items: string[], current: string): string => {
 	const index = items.indexOf(current);

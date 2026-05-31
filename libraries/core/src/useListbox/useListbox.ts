@@ -40,20 +40,19 @@ export type UseListboxOutput = {
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/listbox/
  * @example
  * 	const useListbox = createUseListbox({
- * 		computed: computedAdapter,
+ * 		computed,
  * 		lifecycle: {
- * 			onDestroy: useDestroy,
- * 			onMount: useMount,
+ * 			onDestroy,
+ * 			onMount,
  * 		},
- * 		state: useStateAdapter,
+ * 		state,
  * 	});
  */
 export const createUseListbox: PatternFactory<
 	UseListboxInput,
 	UseListboxOutput
-> =
-	({ computed, state }) =>
-	(input) => {
+> = ({ computed, state }) => {
+	return (input) => {
 		const [selectedOption, setSelectedOption] = state("");
 		const optionId = (value: string) => `${input.id}-${value}`;
 
@@ -129,6 +128,7 @@ export const createUseListbox: PatternFactory<
 			selectedOption,
 		};
 	};
+};
 
 const navigateNext = (options: string[], current: string): string => {
 	const index = options.indexOf(current);

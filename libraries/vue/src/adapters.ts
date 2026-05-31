@@ -1,28 +1,26 @@
-import type { Ports } from "@hexagonal-ui/core";
-import type { UnwrapRef } from "vue";
+import type { FrameworkPort } from "@hexagonal-ui/core";
 
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed as computedVue, onMounted, onUnmounted, ref } from "vue";
 
-// eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix
-export const useStateAdapter = <Value>(initialState: Value) => {
-	const state = ref(initialState);
+const state: FrameworkPort["state"] = (initialState) => {
+	const stateAsRef = ref(initialState);
 
 	return [
-		() => state.value as Value,
-		(value: Value) => {
-			state.value = value as UnwrapRef<Value>;
+		() => stateAsRef.value as typeof initialState,
+		(value) => {
+			stateAsRef.value = value;
 		},
 	] as const;
 };
 
-export const computedAdapter = <Value>(function_: () => Value) => {
-	const c = computed(function_);
+const computed: FrameworkPort["computed"] = (function_) => {
+	const c = computedVue(function_);
 
 	return () => c.value;
 };
 
-export const ports: Ports = {
-	computed: computedAdapter,
+export const frameworkAdapter: FrameworkPort = {
+	computed,
 	lifecycle: { onDestroy: onUnmounted, onMount: onMounted },
-	state: useStateAdapter,
+	state,
 };

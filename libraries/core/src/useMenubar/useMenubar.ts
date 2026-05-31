@@ -38,20 +38,19 @@ export type UseMenubarOutput = {
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/menubar/
  * @example
  * 	const useMenubar = createUseMenubar({
- * 		computed: computedAdapter,
+ * 		computed,
  * 		lifecycle: {
- * 			onDestroy: useDestroy,
- * 			onMount: useMount,
+ * 			onDestroy,
+ * 			onMount,
  * 		},
- * 		state: useStateAdapter,
+ * 		state,
  * 	});
  */
 export const createUseMenubar: PatternFactory<
 	UseMenubarInput,
 	UseMenubarOutput
-> =
-	({ computed, state }) =>
-	(input) => {
+> = ({ computed, state }) => {
+	return (input) => {
 		const [activeItem, setActiveItem] = state(input.items.at(0) ?? "");
 		const itemId = (item: string) => `${input.id}-${item}`;
 
@@ -117,6 +116,7 @@ export const createUseMenubar: PatternFactory<
 			}),
 		};
 	};
+};
 
 const navigateNext = (items: string[], current: string): string => {
 	const index = items.indexOf(current);

@@ -1,6 +1,6 @@
 {
 	"name": "@hexagonal-ui/react",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Hexagonal UI React adapter",
 	"homepage": "https://github.com/adbayb/hexagonal-ui/tree/main/hexagonal-ui#readme",
 	"bugs": "https://github.com/adbayb/hexagonal-ui/issues",

@@ -1,6 +1,6 @@
 {
 	"name": "@hexagonal-ui/core",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Cross-framework and low-level design system building blocks with a focus on customization, interactions, and accessibility",
 	"homepage": "https://github.com/adbayb/hexagonal-ui/tree/main/hexagonal-ui#readme",
 	"bugs": "https://github.com/adbayb/hexagonal-ui/issues",

@@ -1,8 +1,41 @@
 import type { Event } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
-import type { Combobox } from "./Combobox";
+import type { Reactive } from "../shared/types";
 
 /**
+ * Combobox pattern input.
+ */
+export type UseComboboxInput = {
+	"aria-controls": string;
+	"options": string[];
+};
+
+/**
+ * Combobox pattern output.
+ */
+export type UseComboboxOutput = {
+	filteredOptions: Reactive<string[]>;
+	getInputAttributes: Reactive<{
+		"aria-autocomplete": "list";
+		"aria-controls": string;
+		"aria-expanded": boolean;
+		"onBlur": (event: Event) => void;
+		"onChange": (event: Event) => void;
+		"onInput": (event: Event) => void;
+		"role": "combobox";
+		"value": string;
+	}>;
+	getOptionAttributes: (value: string) => {
+		"aria-selected": boolean;
+		"onClick": () => void;
+		"role": "option";
+	};
+	isOpen: Reactive<boolean>;
+	selectedOption: Reactive<string>;
+};
+
+/**
+ * Combobox pattern factory.
  * Combobox pattern factory.
  * @param input - Helpers.
  * @param input.computed - Computed state factory.
@@ -20,8 +53,8 @@ import type { Combobox } from "./Combobox";
  * 	});
  */
 export const createUseCombobox: PatternFactory<
-	{ "aria-controls": string; "options": string[] },
-	Combobox
+	UseComboboxInput,
+	UseComboboxOutput
 > =
 	({ computed, state }) =>
 	(input) => {

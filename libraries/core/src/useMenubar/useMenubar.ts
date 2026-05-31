@@ -1,22 +1,35 @@
 import type { KeyboardEvent } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
-import type { Menubar } from "./Menubar";
+import type { Reactive } from "../shared/types";
 
-const navigateNext = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const next = index === -1 || index === items.length - 1 ? 0 : index + 1;
-
-	return items[next] ?? current;
-};
-
-const navigatePrevious = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const previous = index <= 0 ? items.length - 1 : index - 1;
-
-	return items[previous] ?? current;
+/**
+ * Menubar pattern input.
+ */
+export type UseMenubarInput = {
+	id: string;
+	items: string[];
 };
 
 /**
+ * Menubar pattern output.
+ */
+export type UseMenubarOutput = {
+	activeItem: Reactive<string>;
+	getMenubarAttributes: Reactive<{
+		id: string;
+		role: "menubar";
+	}>;
+	getMenuItemAttributes: (item: string) => {
+		id: string;
+		onClick: () => void;
+		onKeyDown: (event: KeyboardEvent) => void;
+		role: "menuitem";
+		tabIndex: -1 | 0;
+	};
+};
+
+/**
+ * Menubar pattern factory.
  * Menubar pattern factory.
  * @param input - Helpers.
  * @param input.computed - Computed state factory.
@@ -34,8 +47,8 @@ const navigatePrevious = (items: string[], current: string): string => {
  * 	});
  */
 export const createUseMenubar: PatternFactory<
-	{ id: string; items: string[] },
-	Menubar
+	UseMenubarInput,
+	UseMenubarOutput
 > =
 	({ computed, state }) =>
 	(input) => {
@@ -104,3 +117,17 @@ export const createUseMenubar: PatternFactory<
 			}),
 		};
 	};
+
+const navigateNext = (items: string[], current: string): string => {
+	const index = items.indexOf(current);
+	const next = index === -1 || index === items.length - 1 ? 0 : index + 1;
+
+	return items[next] ?? current;
+};
+
+const navigatePrevious = (items: string[], current: string): string => {
+	const index = items.indexOf(current);
+	const previous = index <= 0 ? items.length - 1 : index - 1;
+
+	return items[previous] ?? current;
+};

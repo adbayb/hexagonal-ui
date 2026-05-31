@@ -1,5 +1,28 @@
+import type { Event } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
-import type { Button } from "./Button";
+import type { Reactive } from "../shared/types";
+
+/**
+ * Button pattern input.
+ */
+export type UseButtonInput = {
+	children: boolean | number | string;
+	isDisabled: boolean;
+};
+
+/**
+ * Button pattern output.
+ */
+export type UseButtonOutput = {
+	getAttributes: Reactive<{
+		"aria-disabled": boolean;
+		"aria-label": string;
+		"children": boolean | number | string;
+		"onClick": (event: Event) => void;
+		"role": "button";
+		"type": "button" | "reset" | "submit";
+	}>;
+};
 
 /**
  * Button pattern factory.
@@ -19,10 +42,7 @@ import type { Button } from "./Button";
  * 		state: useStateAdapter,
  * 	});
  */
-export const createUseButton: PatternFactory<
-	{ children: boolean | number | string; isDisabled: boolean },
-	Button
-> =
+export const createUseButton: PatternFactory<UseButtonInput, UseButtonOutput> =
 	({ computed, lifecycle, state }) =>
 	(input) => {
 		const [children, setChildren] = state(input.children);

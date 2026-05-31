@@ -1,3 +1,4 @@
+import type { UseTreeViewInput } from "@hexagonal-ui/solid";
 import type { JSX } from "solid-js";
 
 import {
@@ -7,6 +8,7 @@ import {
 	useListbox,
 	useMenu,
 	useMenubar,
+	useTreeView,
 } from "@hexagonal-ui/solid";
 
 type SectionProps = { children: JSX.Element; title: string };
@@ -231,6 +233,86 @@ const Menubar = () => {
 	);
 };
 
+const TREE_ITEMS: UseTreeViewInput["items"] = [
+	{
+		children: [
+			{ id: "src-index", label: "index.ts" },
+			{
+				children: [
+					{ id: "src-components-button", label: "Button.tsx" },
+					{ id: "src-components-input", label: "Input.tsx" },
+				],
+				id: "src-components",
+				label: "components/",
+			},
+		],
+		id: "src",
+		label: "src/",
+	},
+	{
+		children: [
+			{ id: "public-favicon", label: "favicon.ico" },
+			{ id: "public-robots", label: "robots.txt" },
+		],
+		id: "public",
+		label: "public/",
+	},
+	{ id: "package-json", label: "package.json" },
+];
+
+const getItemPrefix = (hasChildren: boolean, isExpanded: boolean): string => {
+	if (!hasChildren) return "  ";
+
+	return isExpanded ? "▾ " : "▸ ";
+};
+
+const TreeView = () => {
+	const {
+		expandedItems,
+		getGroupAttributes,
+		getTreeAttributes,
+		getTreeItemAttributes,
+	} = useTreeView({ id: "solid-tree", items: TREE_ITEMS });
+
+	const renderItems = (items: UseTreeViewInput["items"]): JSX.Element =>
+		items.map((item) => (
+			// eslint-disable-next-line @eslint-react/no-missing-key
+			<li>
+				<span
+					{...getTreeItemAttributes(item.id)}
+					style={{
+						cursor: "pointer",
+						display: "block",
+						padding: "0.125rem 0.25rem",
+					}}
+				>
+					{getItemPrefix(
+						(item.children?.length ?? 0) > 0,
+						expandedItems().includes(item.id),
+					)}
+					{item.label}
+				</span>
+				{item.children && expandedItems().includes(item.id) && (
+					<ul
+						{...getGroupAttributes(item.id)}
+						style={{ "padding-left": "1rem" }}
+					>
+						{renderItems(item.children)}
+					</ul>
+				)}
+			</li>
+		));
+
+	return (
+		<ul
+			{...getTreeAttributes()}
+			style={{ "list-style": "none", "padding": "0" }}
+		>
+			{renderItems(TREE_ITEMS)}
+		</ul>
+	);
+};
+
 export const App = () => {
 	return (
 		<>
@@ -251,6 +333,9 @@ export const App = () => {
 			</Section>
 			<Section title="Menubar">
 				<Menubar />
+			</Section>
+			<Section title="Tree View">
+				<TreeView />
 			</Section>
 		</>
 	);

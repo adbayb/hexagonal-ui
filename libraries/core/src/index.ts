@@ -1,7 +1,15 @@
 export type { Ports } from "./shared/Pattern";
 export { createUseButton } from "./useButton";
+export type { UseButtonInput, UseButtonOutput } from "./useButton";
 export { createUseCombobox } from "./useCombobox";
+export type { UseComboboxInput, UseComboboxOutput } from "./useCombobox";
 export { createUseDisclosure } from "./useDisclosure";
+export type { UseDisclosureInput, UseDisclosureOutput } from "./useDisclosure";
 export { createUseListbox } from "./useListbox";
+export type { UseListboxInput, UseListboxOutput } from "./useListbox";
 export { createUseMenu } from "./useMenu";
+export type { UseMenuInput, UseMenuOutput } from "./useMenu";
 export { createUseMenubar } from "./useMenubar";
+export type { UseMenubarInput, UseMenubarOutput } from "./useMenubar";
+export { createUseTreeView } from "./useTreeView";
+export type { UseTreeViewInput, UseTreeViewOutput } from "./useTreeView";

@@ -1,5 +1,27 @@
 import type { PatternFactory } from "../shared/Pattern";
-import type { Disclosure } from "./Disclosure";
+import type { Reactive } from "../shared/types";
+
+/**
+ * Disclosure pattern input.
+ */
+export type UseDisclosureInput = {
+	"aria-controls": string;
+	"id": string;
+};
+
+/**
+ * Disclosure pattern output.
+ */
+export type UseDisclosureOutput = {
+	getTriggerAttributes: Reactive<{
+		"aria-controls": string;
+		"aria-expanded": boolean;
+		"id": string;
+		"onClick": () => void;
+		"role": "button";
+	}>;
+	isOpen: Reactive<boolean>;
+};
 
 /**
  * Disclosure pattern factory.
@@ -19,8 +41,8 @@ import type { Disclosure } from "./Disclosure";
  * 	});
  */
 export const createUseDisclosure: PatternFactory<
-	{ "aria-controls": string; "id": string },
-	Disclosure
+	UseDisclosureInput,
+	UseDisclosureOutput
 > =
 	({ computed, state }) =>
 	(input) => {

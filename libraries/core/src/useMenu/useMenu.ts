@@ -1,22 +1,48 @@
 import type { KeyboardEvent } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
-import type { Menu } from "./Menu";
+import type { Reactive } from "../shared/types";
 
-const navigateNext = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const next = index === -1 || index === items.length - 1 ? 0 : index + 1;
-
-	return items[next] ?? current;
-};
-
-const navigatePrevious = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const previous = index <= 0 ? items.length - 1 : index - 1;
-
-	return items[previous] ?? current;
+/**
+ * Menu pattern input.
+ */
+export type UseMenuInput = {
+	id: string;
+	items: string[];
+	triggerId: string;
 };
 
 /**
+ * Menu pattern output.
+ */
+export type UseMenuOutput = {
+	activeItem: Reactive<string>;
+	getMenuAttributes: Reactive<{
+		"aria-activedescendant": string;
+		"id": string;
+		"onKeyDown": (event: KeyboardEvent) => void;
+		"role": "menu";
+		"tabIndex": -1;
+	}>;
+	getMenuItemAttributes: (item: string) => {
+		id: string;
+		onClick: () => void;
+		role: "menuitem";
+		tabIndex: -1;
+	};
+	getTriggerAttributes: Reactive<{
+		"aria-controls": string;
+		"aria-expanded": boolean;
+		"aria-haspopup": "menu";
+		"id": string;
+		"onClick": () => void;
+		"onKeyDown": (event: KeyboardEvent) => void;
+		"role": "button";
+	}>;
+	isOpen: Reactive<boolean>;
+};
+
+/**
+ * Menu pattern factory.
  * Menu pattern factory.
  * @param input - Helpers.
  * @param input.computed - Computed state factory.
@@ -33,10 +59,7 @@ const navigatePrevious = (items: string[], current: string): string => {
  * 		state: useStateAdapter,
  * 	});
  */
-export const createUseMenu: PatternFactory<
-	{ id: string; items: string[]; triggerId: string },
-	Menu
-> =
+export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> =
 	({ computed, state }) =>
 	(input) => {
 		const [isOpen, setIsOpen] = state(false);
@@ -168,3 +191,17 @@ export const createUseMenu: PatternFactory<
 			isOpen,
 		};
 	};
+
+const navigateNext = (items: string[], current: string): string => {
+	const index = items.indexOf(current);
+	const next = index === -1 || index === items.length - 1 ? 0 : index + 1;
+
+	return items[next] ?? current;
+};
+
+const navigatePrevious = (items: string[], current: string): string => {
+	const index = items.indexOf(current);
+	const previous = index <= 0 ? items.length - 1 : index - 1;
+
+	return items[previous] ?? current;
+};

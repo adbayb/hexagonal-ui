@@ -1,8 +1,37 @@
 import type { KeyboardEvent } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
-import type { Listbox } from "./Listbox";
+import type { Reactive } from "../shared/types";
 
 /**
+ * Listbox pattern input.
+ */
+export type UseListboxInput = {
+	id: string;
+	options: string[];
+};
+
+/**
+ * Listbox pattern output.
+ */
+export type UseListboxOutput = {
+	getListboxAttributes: Reactive<{
+		"aria-activedescendant": string;
+		"id": string;
+		"onKeyDown": (event: KeyboardEvent) => void;
+		"role": "listbox";
+		"tabIndex": 0;
+	}>;
+	getOptionAttributes: (value: string) => {
+		"aria-selected": boolean;
+		"id": string;
+		"onClick": () => void;
+		"role": "option";
+	};
+	selectedOption: Reactive<string>;
+};
+
+/**
+ * Listbox pattern factory.
  * Listbox pattern factory.
  * @param input - Helpers.
  * @param input.computed - Computed state factory.
@@ -20,8 +49,8 @@ import type { Listbox } from "./Listbox";
  * 	});
  */
 export const createUseListbox: PatternFactory<
-	{ id: string; options: string[] },
-	Listbox
+	UseListboxInput,
+	UseListboxOutput
 > =
 	({ computed, state }) =>
 	(input) => {

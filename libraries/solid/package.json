@@ -34,9 +34,9 @@
 		"@hexagonal-ui/core": "workspace:^"
 	},
 	"devDependencies": {
-		"quickbundle": "3.0.0",
-		"solid-js": "1.9.13",
-		"vitest": "4.1.7"
+		"quickbundle": "3.1.0",
+		"solid-js": "1.9.14",
+		"vitest": "4.1.10"
 	},
 	"peerDependencies": {
 		"solid-js": "^1.0.0"

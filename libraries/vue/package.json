@@ -34,9 +34,9 @@
 		"@hexagonal-ui/core": "workspace:^"
 	},
 	"devDependencies": {
-		"quickbundle": "3.0.0",
-		"vitest": "4.1.7",
-		"vue": "3.5.35"
+		"quickbundle": "3.1.0",
+		"vitest": "4.1.10",
+		"vue": "3.5.40"
 	},
 	"peerDependencies": {
 		"vue": "^3.0.0"

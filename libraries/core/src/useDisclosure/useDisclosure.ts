@@ -1,12 +1,14 @@
 import type { PatternFactory } from "../shared/Pattern";
+import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
 
 /**
- * Disclosure pattern input.
+ * Disclosure pattern input. `id` is the controlled panel id; the trigger id
+ * defaults to `${id}-trigger` when omitted.
  */
 export type UseDisclosureInput = {
-	"aria-controls": string;
-	"id": string;
+	id: string;
+	triggerId?: string;
 };
 
 /**
@@ -25,33 +27,28 @@ export type UseDisclosureOutput = {
 
 /**
  * Disclosure pattern factory.
- * @param input - Helpers.
- * @param input.computed - Computed state factory.
- * @param input.state - State manager.
+ * @param frameworkAdapter - Helpers.
+ * @param frameworkAdapter.computed - Computed state factory.
+ * @param frameworkAdapter.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
  * @example
- * 	const useDisclosure = createUseDisclosure({
- * 		computed,
- * 		lifecycle: {
- * 			onDestroy,
- * 			onMount,
- * 		},
- * 		state,
- * 	});
+ * 	const useDisclosure = createUseDisclosure({ computed, state });
  */
 export const createUseDisclosure: PatternFactory<
 	UseDisclosureInput,
-	UseDisclosureOutput
+	UseDisclosureOutput,
+	Pick<FrameworkPort, "computed" | "state">
 > = ({ computed, state }) => {
 	return (input) => {
 		const [isOpen, setIsOpen] = state(false);
+		const triggerId = input.triggerId ?? `${input.id}-trigger`;
 
 		return {
 			getTriggerAttributes: computed(() => ({
-				"aria-controls": input["aria-controls"],
+				"aria-controls": input.id,
 				"aria-expanded": isOpen(),
-				"id": input.id,
+				"id": triggerId,
 				"onClick"() {
 					setIsOpen(!isOpen());
 				},

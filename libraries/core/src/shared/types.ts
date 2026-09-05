@@ -9,6 +9,9 @@ export type Reactive<Input = unknown> = () => Input;
 export type Value =
 	| AnyFunction
 	| boolean
+	| null
 	| number
 	| readonly unknown[]
-	| string;
+	| Record<string, unknown>
+	| string
+	| undefined;

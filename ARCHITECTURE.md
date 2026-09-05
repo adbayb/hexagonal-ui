@@ -98,7 +98,7 @@ getAttributes: Reactive<{
 
 **WAI-ARIA:** [Disclosure](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/)
 
-**Input:** `{ "aria-controls": string; "id": string }`
+**Input:** `{ id: string; triggerId?: string }` (`id` is the panel id, trigger defaults to `${id}-trigger`)
 
 **Output:**
 
@@ -121,7 +121,7 @@ isOpen: Reactive<boolean>;
 
 **WAI-ARIA:** [Combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
 
-**Input:** `{ "aria-controls": string; "options": string[] }`
+**Input:** `{ id: string; options: string[] }`
 
 **Output:**
 
@@ -175,7 +175,7 @@ selectedOption: Reactive<string>
 
 **WAI-ARIA:** [Menu](https://www.w3.org/WAI/ARIA/apg/patterns/menu/)
 
-**Input:** `{ id: string; items: string[]; triggerId: string }`
+**Input:** `{ id: string; items: string[]; triggerId?: string }`
 
 **Output:**
 

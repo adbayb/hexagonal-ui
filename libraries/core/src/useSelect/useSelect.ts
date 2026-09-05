@@ -6,24 +6,26 @@ import type { Reactive } from "../shared/types";
 import { navigateNext, navigatePrevious } from "../shared/navigation";
 
 /**
- * Listbox pattern input.
+ * Select pattern input. `id` is the listbox id; the trigger id defaults to
+ * `${id}-trigger` when omitted.
  */
-export type UseListboxInput = {
+export type UseSelectInput = {
 	id: string;
 	options: string[];
+	triggerId?: string;
 };
 
 /**
- * Listbox pattern output.
+ * Select pattern output.
  */
-export type UseListboxOutput = {
+export type UseSelectOutput = {
 	activeOption: Reactive<string>;
 	getListboxAttributes: Reactive<{
 		"aria-activedescendant": string;
 		"id": string;
 		"onKeyDown": (event: KeyboardEvent) => void;
 		"role": "listbox";
-		"tabIndex": 0;
+		"tabIndex": -1;
 	}>;
 	getOptionAttributes: (value: string) => Reactive<{
 		"aria-selected": boolean;
@@ -31,37 +33,104 @@ export type UseListboxOutput = {
 		"onClick": () => void;
 		"role": "option";
 	}>;
+	getTriggerAttributes: Reactive<{
+		"aria-controls": string;
+		"aria-expanded": boolean;
+		"aria-haspopup": "listbox";
+		"id": string;
+		"onClick": () => void;
+		"onKeyDown": (event: KeyboardEvent) => void;
+		"role": "button";
+	}>;
+	isOpen: Reactive<boolean>;
 	selectedOption: Reactive<string>;
 };
 
 /**
- * Listbox pattern factory.
+ * Select pattern factory. Composes a button-like trigger with a listbox
+ * popup, reusing the shared list navigation helpers.
  * @param frameworkAdapter - Helpers.
  * @param frameworkAdapter.computed - Computed state factory.
  * @param frameworkAdapter.state - State manager.
  * @returns Hook.
- * @see https://www.w3.org/WAI/ARIA/apg/patterns/listbox/
+ * @see https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ (select-only)
  * @example
- * 	const useListbox = createUseListbox({ computed, state });
+ * 	const useSelect = createUseSelect({ computed, state });
  */
-export const createUseListbox: PatternFactory<
-	UseListboxInput,
-	UseListboxOutput,
+export const createUseSelect: PatternFactory<
+	UseSelectInput,
+	UseSelectOutput,
 	Pick<FrameworkPort, "computed" | "state">
 > = ({ computed, state }) => {
 	return (input) => {
+		const [isOpen, setIsOpen] = state(false);
 		const [activeOption, setActiveOption] = state("");
 		const [selectedOption, setSelectedOption] = state("");
 		const optionId = (value: string) => `${input.id}-${value}`;
+		const triggerId = input.triggerId ?? `${input.id}-trigger`;
+
+		const open = (value: string) => {
+			setIsOpen(true);
+			setActiveOption(value);
+		};
+
+		const openAtSelected = (fallback: string | undefined) => {
+			open(selectedOption() === "" ? (fallback ?? "") : selectedOption());
+		};
+
+		const close = () => {
+			setIsOpen(false);
+			setActiveOption("");
+		};
 
 		const commitSelection = (value: string) => {
 			if (value === "") return;
 
-			setActiveOption(value);
 			setSelectedOption(value);
+			close();
 		};
 
-		const handleKeyDown = (event: KeyboardEvent) => {
+		const handleTriggerKeyDown = (event: KeyboardEvent) => {
+			const { options } = input;
+
+			switch (event.key) {
+				case " ":
+				case "ArrowDown":
+				case "Enter": {
+					event.preventDefault();
+
+					if (isOpen()) {
+						commitSelection(activeOption());
+					} else {
+						openAtSelected(options.at(0));
+					}
+
+					break;
+				}
+				case "ArrowUp": {
+					event.preventDefault();
+
+					if (isOpen()) {
+						setActiveOption(
+							navigatePrevious(options, activeOption()),
+						);
+					} else {
+						openAtSelected(options.at(-1));
+					}
+
+					break;
+				}
+				case "Escape": {
+					event.preventDefault();
+
+					close();
+
+					break;
+				}
+			}
+		};
+
+		const handleListboxKeyDown = (event: KeyboardEvent) => {
 			const { options } = input;
 
 			switch (event.key) {
@@ -69,9 +138,7 @@ export const createUseListbox: PatternFactory<
 				case "Enter": {
 					event.preventDefault();
 
-					if (activeOption() !== "") {
-						setSelectedOption(activeOption());
-					}
+					commitSelection(activeOption());
 
 					break;
 				}
@@ -98,6 +165,13 @@ export const createUseListbox: PatternFactory<
 
 					break;
 				}
+				case "Escape": {
+					event.preventDefault();
+
+					close();
+
+					break;
+				}
 				case "Home": {
 					event.preventDefault();
 
@@ -117,9 +191,9 @@ export const createUseListbox: PatternFactory<
 					? optionId(activeOption())
 					: "",
 				"id": input.id,
-				"onKeyDown": handleKeyDown,
+				"onKeyDown": handleListboxKeyDown,
 				"role": "listbox",
-				"tabIndex": 0,
+				"tabIndex": -1,
 			})),
 			getOptionAttributes: (value: string) =>
 				computed(() => ({
@@ -131,6 +205,22 @@ export const createUseListbox: PatternFactory<
 					},
 					"role": "option",
 				})),
+			getTriggerAttributes: computed(() => ({
+				"aria-controls": input.id,
+				"aria-expanded": isOpen(),
+				"aria-haspopup": "listbox",
+				"id": triggerId,
+				"onClick"() {
+					if (isOpen()) {
+						close();
+					} else {
+						openAtSelected(input.options.at(0));
+					}
+				},
+				"onKeyDown": handleTriggerKeyDown,
+				"role": "button",
+			})),
+			isOpen,
 			selectedOption,
 		};
 	};

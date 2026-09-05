@@ -8,6 +8,8 @@ export type Pattern<
 	Props extends Record<string, Reactive<Value> | Value> = AnyObject,
 > = Props;
 
-export type PatternFactory<Input extends AnyObject, Output extends Pattern> = (
-	frameworkAdapter: FrameworkPort,
-) => (input: Input) => Output;
+export type PatternFactory<
+	Input extends AnyObject,
+	Output extends Pattern,
+	Ports extends Partial<FrameworkPort> = FrameworkPort,
+> = (frameworkAdapter: Ports) => (input: Input) => Output;

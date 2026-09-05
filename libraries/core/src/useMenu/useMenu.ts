@@ -1,14 +1,18 @@
 import type { KeyboardEvent } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
+import type { FocusableElement, FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
 
+import { navigateNext, navigatePrevious } from "../shared/navigation";
+
 /**
- * Menu pattern input.
+ * Menu pattern input. `id` is the menu id; the trigger id defaults to
+ * `${id}-trigger` when omitted.
  */
 export type UseMenuInput = {
 	id: string;
 	items: string[];
-	triggerId: string;
+	triggerId?: string;
 };
 
 /**
@@ -23,12 +27,12 @@ export type UseMenuOutput = {
 		"role": "menu";
 		"tabIndex": -1;
 	}>;
-	getMenuItemAttributes: (item: string) => {
+	getMenuItemAttributes: (item: string) => Reactive<{
 		id: string;
 		onClick: () => void;
 		role: "menuitem";
 		tabIndex: -1;
-	};
+	}>;
 	getTriggerAttributes: Reactive<{
 		"aria-controls": string;
 		"aria-expanded": boolean;
@@ -39,34 +43,35 @@ export type UseMenuOutput = {
 		"role": "button";
 	}>;
 	isOpen: Reactive<boolean>;
+	menuRef: (node: FocusableElement | null) => void;
+	triggerRef: (node: FocusableElement | null) => void;
 };
 
 /**
  * Menu pattern factory.
- * Menu pattern factory.
- * @param input - Helpers.
- * @param input.computed - Computed state factory.
- * @param input.state - State manager.
+ * @param frameworkAdapter - Helpers.
+ * @param frameworkAdapter.computed - Computed state factory.
+ * @param frameworkAdapter.effect - Reactive side-effect runner.
+ * @param frameworkAdapter.ref - Element reference factory.
+ * @param frameworkAdapter.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/menu/
  * @example
- * 	const useMenu = createUseMenu({
- * 		computed,
- * 		lifecycle: {
- * 			onDestroy,
- * 			onMount,
- * 		},
- * 		state,
- * 	});
+ * 	const useMenu = createUseMenu({ computed, effect, ref, state });
  */
-export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> = ({
-	computed,
-	state,
-}) => {
+export const createUseMenu: PatternFactory<
+	UseMenuInput,
+	UseMenuOutput,
+	Pick<FrameworkPort, "computed" | "effect" | "ref" | "state">
+> = ({ computed, effect, ref, state }) => {
 	return (input) => {
 		const [isOpen, setIsOpen] = state(false);
 		const [activeItem, setActiveItem] = state("");
+		const [menuNode, setMenuNode] = ref<FocusableElement>(null);
+		const [triggerNode, setTriggerNode] = ref<FocusableElement>(null);
+		const [wasOpen, setWasOpen] = state(false);
 		const itemId = (item: string) => `${input.id}-${item}`;
+		const triggerId = input.triggerId ?? `${input.id}-trigger`;
 
 		const open = (item: string) => {
 			setIsOpen(true);
@@ -77,6 +82,21 @@ export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> = ({
 			setIsOpen(false);
 			setActiveItem("");
 		};
+
+		// Move focus into the menu on open, back to the trigger on close.
+		effect(() => {
+			const openNow = isOpen();
+
+			if (openNow === wasOpen()) return;
+
+			setWasOpen(openNow);
+
+			if (openNow) {
+				menuNode()?.focus();
+			} else {
+				triggerNode()?.focus();
+			}
+		});
 
 		const handleTriggerKeyDown = (event: KeyboardEvent) => {
 			const { items } = input;
@@ -167,19 +187,21 @@ export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> = ({
 				"role": "menu",
 				"tabIndex": -1,
 			})),
-			getMenuItemAttributes: (item: string) => ({
-				id: itemId(item),
-				onClick() {
-					close();
-				},
-				role: "menuitem",
-				tabIndex: -1,
-			}),
+			getMenuItemAttributes: (item: string) =>
+				computed(() => ({
+					id: itemId(item),
+					// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the item closure for fine-grained reactivity
+					onClick() {
+						close();
+					},
+					role: "menuitem",
+					tabIndex: -1,
+				})),
 			getTriggerAttributes: computed(() => ({
 				"aria-controls": input.id,
 				"aria-expanded": isOpen(),
 				"aria-haspopup": "menu",
-				"id": input.triggerId,
+				"id": triggerId,
 				"onClick"() {
 					if (isOpen()) {
 						close();
@@ -191,20 +213,8 @@ export const createUseMenu: PatternFactory<UseMenuInput, UseMenuOutput> = ({
 				"role": "button",
 			})),
 			isOpen,
+			menuRef: setMenuNode,
+			triggerRef: setTriggerNode,
 		};
 	};
-};
-
-const navigateNext = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const next = index === -1 || index === items.length - 1 ? 0 : index + 1;
-
-	return items[next] ?? current;
-};
-
-const navigatePrevious = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const previous = index <= 0 ? items.length - 1 : index - 1;
-
-	return items[previous] ?? current;
 };

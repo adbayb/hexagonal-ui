@@ -17,9 +17,7 @@
 			"persistent": true
 		},
 		"test": {
-			"dependsOn": ["build"],
-			"cache": false,
-			"persistent": true
+			"cache": false
 		}
 	}
 }

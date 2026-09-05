@@ -1,5 +1,6 @@
 import type { Event } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
+import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
 
 /**
@@ -7,7 +8,9 @@ import type { Reactive } from "../shared/types";
  */
 export type UseButtonInput = {
 	children: boolean | number | string;
-	isDisabled: boolean;
+	isDisabled?: boolean;
+	onPress?: (event: Event) => void;
+	type?: "button" | "reset" | "submit";
 };
 
 /**
@@ -26,47 +29,35 @@ export type UseButtonOutput = {
 
 /**
  * Button pattern factory.
- * @param input - Helpers.
- * @param input.computed - Computed state factory.
- * @param input.lifecycle - Lifecycle functions.
- * @param input.state - State manager.
+ * @param frameworkAdapter - Helpers.
+ * @param frameworkAdapter.computed - Computed state factory.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/button/
  * @example
- * 	const useButton = createUseButton({
- * 		computed,
- * 		lifecycle: {
- * 			onDestroy,
- * 			onMount,
- * 		},
- * 		state,
- * 	});
+ * 	const useButton = createUseButton({ computed });
  */
 export const createUseButton: PatternFactory<
 	UseButtonInput,
-	UseButtonOutput
-> = ({ computed, lifecycle, state }) => {
+	UseButtonOutput,
+	Pick<FrameworkPort, "computed">
+> = ({ computed }) => {
 	return (input) => {
-		const [children, setChildren] = state(input.children);
-
-		lifecycle.onMount(() => {
-			console.log("useButton mounted");
-		});
-
-		lifecycle.onDestroy(() => {
-			console.log("useButton destroyed");
-		});
-
 		return {
 			getAttributes: computed(() => ({
-				"aria-disabled": false,
-				"aria-label": String(children()),
-				"children": children(),
+				"aria-disabled": input.isDisabled ?? false,
+				"aria-label": String(input.children),
+				"children": input.children,
 				"onClick"(event) {
-					setChildren(`Mutated after ${event.type}`);
+					if (input.isDisabled) {
+						event.preventDefault();
+
+						return;
+					}
+
+					input.onPress?.(event);
 				},
 				"role": "button",
-				"type": "button",
+				"type": input.type ?? "button",
 			})),
 		};
 	};

@@ -1,4 +1,4 @@
-import type { UseTreeViewInput } from "@hexagonal-ui/vue";
+import type { FocusableElement, UseTreeViewInput } from "@hexagonal-ui/vue";
 import type { VNode } from "vue";
 
 import {
@@ -8,6 +8,7 @@ import {
 	useListbox,
 	useMenu,
 	useMenubar,
+	useSelect,
 	useTreeView,
 } from "@hexagonal-ui/vue";
 import { defineComponent } from "vue";
@@ -36,6 +37,14 @@ const FRUITS = [
 	"Grape",
 ];
 
+/*
+ * Prevent the input from blurring (and the popup from closing) before the
+ * option click registers.
+ */
+const keepFocusOnMouseDown = (event: { preventDefault: () => void }) => {
+	event.preventDefault();
+};
+
 const Button = defineComponent({
 	setup() {
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
@@ -61,8 +70,7 @@ const Disclosure = defineComponent({
 	setup() {
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
 		const { getTriggerAttributes, isOpen } = useDisclosure({
-			"aria-controls": "vue-panel",
-			"id": "vue-trigger",
+			id: "vue-panel",
 		});
 
 		return () => (
@@ -83,8 +91,8 @@ const Combobox = defineComponent({
 	setup() {
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
 		const combobox = useCombobox({
-			"aria-controls": "vue-listbox",
-			"options": FRUITS,
+			id: "vue-listbox",
+			options: FRUITS,
 		});
 
 		const {
@@ -106,7 +114,9 @@ const Combobox = defineComponent({
 						{filteredOptions().map((option) => (
 							<li
 								key={option}
-								{...getOptionAttributes(option)}
+								{...getOptionAttributes(option)()}
+								// eslint-disable-next-line @eslint-react/dom-no-unknown-property
+								onMousedown={keepFocusOnMouseDown}
 							>
 								{option}
 							</li>
@@ -128,25 +138,14 @@ const Listbox = defineComponent({
 		});
 
 		return () => {
-			/*
-			 * Vue JSX's parseName uses hyphenate() to derive the DOM event name from the prop:
-			 * `onKeyDown` → hyphenate("KeyDown") → "key-down" (never fires).
-			 * `onKeydown` → hyphenate("keydown") → "keydown" (correct).
-			 * React and Solid map `onKeyDown` directly to the `keydown` event without hyphenation.
-			 * So we destructure `onKeyDown` and re-bind it as `onKeydown`.
-			 */
-			const { onKeyDown, ...listboxAttributes } = getListboxAttributes();
-
 			return (
 				<div>
 					<ul
-						{...listboxAttributes}
-						// eslint-disable-next-line @eslint-react/dom-no-unknown-property
-						onKeydown={onKeyDown}
+						{...getListboxAttributes()}
 						style={{ listStyle: "none", padding: "0" }}
 					>
 						{FRUITS.map((option) => {
-							const attributes = getOptionAttributes(option);
+							const attributes = getOptionAttributes(option)();
 
 							return (
 								<li
@@ -191,6 +190,15 @@ const Listbox = defineComponent({
 const ACTIONS = ["Copy", "Cut", "Paste", "Delete"];
 const NAV_ITEMS = ["File", "Edit", "View", "Help"];
 
+/*
+ * Vue's VNodeRef passes `Element | ComponentPublicInstance`, which is wider
+ * than the core's `FocusableElement`, so adapt it at the boundary.
+ */
+const toFocusableRef =
+	(setter: (node: FocusableElement | null) => void) => (node: unknown) => {
+		setter(node as FocusableElement | null);
+	};
+
 const Menu = defineComponent({
 	setup() {
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
@@ -205,21 +213,26 @@ const Menu = defineComponent({
 			getMenuItemAttributes,
 			getTriggerAttributes,
 			isOpen,
+			menuRef,
+			triggerRef,
 		} = menu;
 
 		return () => {
-			const { onKeyDown: onMenuKeyDown, ...menuAttributes } =
-				getMenuAttributes();
-
 			return (
 				<div style={{ position: "relative" }}>
 					{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-					<button {...getTriggerAttributes()}>Actions ▾</button>
+					<button
+						{...getTriggerAttributes()}
+						// eslint-disable-next-line @eslint-react/refs -- not a React ref: plain setter from useMenu, adapted for Vue's VNodeRef
+						ref={toFocusableRef(triggerRef)}
+					>
+						Actions ▾
+					</button>
 					{isOpen() && (
 						<ul
-							{...menuAttributes}
-							// eslint-disable-next-line @eslint-react/dom-no-unknown-property
-							onKeydown={onMenuKeyDown}
+							{...getMenuAttributes()}
+							// eslint-disable-next-line @eslint-react/refs -- not a React ref: plain setter from useMenu, adapted for Vue's VNodeRef
+							ref={toFocusableRef(menuRef)}
 							style={{
 								background: "#fff",
 								border: "1px solid #ccc",
@@ -232,7 +245,7 @@ const Menu = defineComponent({
 							{ACTIONS.map((action) => (
 								<li
 									key={action}
-									{...getMenuItemAttributes(action)}
+									{...getMenuItemAttributes(action)()}
 									style={{
 										cursor: "pointer",
 										padding: "0.25rem 1rem",
@@ -271,16 +284,13 @@ const Menubar = defineComponent({
 				}}
 			>
 				{NAV_ITEMS.map((item) => {
-					const { onKeyDown: onItemKeyDown, ...itemAttributes } =
-						getMenuItemAttributes(item);
+					const itemAttributes = getMenuItemAttributes(item)();
 
 					return (
 						<li key={item}>
 							{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
 							<button
 								{...itemAttributes}
-								// eslint-disable-next-line @eslint-react/dom-no-unknown-property
-								onKeydown={onItemKeyDown}
 								style={{
 									background:
 										activeItem() === item
@@ -301,6 +311,63 @@ const Menubar = defineComponent({
 					);
 				})}
 			</ul>
+		);
+	},
+});
+
+const Select = defineComponent({
+	setup() {
+		// eslint-disable-next-line @eslint-react/rules-of-hooks
+		const select = useSelect({
+			id: "vue-select",
+			options: FRUITS,
+			triggerId: "vue-select-trigger",
+		});
+
+		const {
+			getListboxAttributes,
+			getOptionAttributes,
+			getTriggerAttributes,
+			isOpen,
+			selectedOption,
+		} = select;
+
+		return () => (
+			<div style={{ position: "relative" }}>
+				{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
+				<button {...getTriggerAttributes()}>
+					{selectedOption() === ""
+						? "Choose a fruit"
+						: selectedOption()}{" "}
+					▾
+				</button>
+				{isOpen() && (
+					<ul
+						{...getListboxAttributes()}
+						style={{
+							background: "#fff",
+							border: "1px solid #ccc",
+							listStyle: "none",
+							margin: "0",
+							padding: "0.25rem 0",
+							position: "absolute",
+						}}
+					>
+						{FRUITS.map((option) => (
+							<li
+								key={option}
+								{...getOptionAttributes(option)()}
+								style={{
+									cursor: "pointer",
+									padding: "0.25rem 1rem",
+								}}
+							>
+								{option}
+							</li>
+						))}
+					</ul>
+				)}
+			</div>
 		);
 	},
 });
@@ -354,7 +421,7 @@ const TreeView = defineComponent({
 			items.map((item) => (
 				<li key={item.id}>
 					<span
-						{...getTreeItemAttributes(item.id)}
+						{...getTreeItemAttributes(item.id)()}
 						style={{
 							cursor: "pointer",
 							display: "block",
@@ -369,7 +436,7 @@ const TreeView = defineComponent({
 					</span>
 					{item.children && expandedItems().includes(item.id) && (
 						<ul
-							{...getGroupAttributes(item.id)}
+							{...getGroupAttributes(item.id)()}
 							style={{ paddingLeft: "1rem" }}
 						>
 							{renderItems(item.children)}
@@ -379,14 +446,9 @@ const TreeView = defineComponent({
 			));
 
 		return () => {
-			const { onKeyDown: onTreeKeyDown, ...treeAttributes } =
-				getTreeAttributes();
-
 			return (
 				<ul
-					{...treeAttributes}
-					// eslint-disable-next-line @eslint-react/dom-no-unknown-property
-					onKeydown={onTreeKeyDown}
+					{...getTreeAttributes()}
 					style={{ listStyle: "none", padding: "0" }}
 				>
 					{renderItems(TREE_ITEMS)}
@@ -415,6 +477,9 @@ export const App = () => (
 		</Section>
 		<Section title="Menubar">
 			<Menubar />
+		</Section>
+		<Section title="Select">
+			<Select />
 		</Section>
 		<Section title="Tree View">
 			<TreeView />

@@ -8,6 +8,7 @@ import {
 	useListbox,
 	useMenu,
 	useMenubar,
+	useSelect,
 	useTreeView,
 } from "@hexagonal-ui/solid";
 
@@ -30,6 +31,14 @@ const FRUITS = [
 	"Grape",
 ];
 
+/*
+ * Prevent the input from blurring (and the popup from closing) before the
+ * option click registers.
+ */
+const keepFocusOnMouseDown = (event: { preventDefault: () => void }) => {
+	event.preventDefault();
+};
+
 const Button = () => {
 	const { getAttributes } = useButton({
 		children: "Hello from Solid 👋",
@@ -42,8 +51,7 @@ const Button = () => {
 
 const Disclosure = () => {
 	const { getTriggerAttributes, isOpen } = useDisclosure({
-		"aria-controls": "solid-panel",
-		"id": "solid-trigger",
+		id: "solid-panel",
 	});
 
 	return (
@@ -67,8 +75,8 @@ const Combobox = () => {
 		isOpen,
 		selectedOption,
 	} = useCombobox({
-		"aria-controls": "solid-listbox",
-		"options": FRUITS,
+		id: "solid-listbox",
+		options: FRUITS,
 	});
 
 	return (
@@ -81,7 +89,12 @@ const Combobox = () => {
 				>
 					{filteredOptions().map((option) => (
 						// eslint-disable-next-line @eslint-react/no-missing-key
-						<li {...getOptionAttributes(option)}>{option}</li>
+						<li
+							{...getOptionAttributes(option)()}
+							onMouseDown={keepFocusOnMouseDown}
+						>
+							{option}
+						</li>
 					))}
 				</ul>
 			)}
@@ -103,7 +116,7 @@ const Listbox = () => {
 				style={{ "list-style": "none", "padding": "0" }}
 			>
 				{FRUITS.map((option) => {
-					const attributes = getOptionAttributes(option);
+					const attributes = getOptionAttributes(option)();
 
 					return (
 						// eslint-disable-next-line @eslint-react/no-missing-key
@@ -150,6 +163,8 @@ const Menu = () => {
 		getMenuItemAttributes,
 		getTriggerAttributes,
 		isOpen,
+		menuRef,
+		triggerRef,
 	} = useMenu({
 		id: "solid-menu",
 		items: ACTIONS,
@@ -159,10 +174,16 @@ const Menu = () => {
 	return (
 		<div style={{ position: "relative" }}>
 			{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-			<button {...getTriggerAttributes()}>Actions ▾</button>
+			<button
+				{...getTriggerAttributes()}
+				ref={triggerRef}
+			>
+				Actions ▾
+			</button>
 			{isOpen() && (
 				<ul
 					{...getMenuAttributes()}
+					ref={menuRef}
 					style={{
 						"background": "#fff",
 						"border": "1px solid #ccc",
@@ -175,7 +196,7 @@ const Menu = () => {
 					{ACTIONS.map((action) => (
 						// eslint-disable-next-line @eslint-react/no-missing-key
 						<li
-							{...getMenuItemAttributes(action)}
+							{...getMenuItemAttributes(action)()}
 							style={{
 								cursor: "pointer",
 								padding: "0.25rem 1rem",
@@ -212,7 +233,7 @@ const Menubar = () => {
 				<li>
 					{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
 					<button
-						{...getMenuItemAttributes(item)}
+						{...getMenuItemAttributes(item)()}
 						style={{
 							"background":
 								activeItem() === item
@@ -230,6 +251,56 @@ const Menubar = () => {
 				</li>
 			))}
 		</ul>
+	);
+};
+
+const Select = () => {
+	const {
+		getListboxAttributes,
+		getOptionAttributes,
+		getTriggerAttributes,
+		isOpen,
+		selectedOption,
+	} = useSelect({
+		id: "solid-select",
+		options: FRUITS,
+		triggerId: "solid-select-trigger",
+	});
+
+	return (
+		<div style={{ position: "relative" }}>
+			{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
+			<button {...getTriggerAttributes()}>
+				{selectedOption() === "" ? "Choose a fruit" : selectedOption()}{" "}
+				▾
+			</button>
+			{isOpen() && (
+				<ul
+					{...getListboxAttributes()}
+					style={{
+						"background": "#fff",
+						"border": "1px solid #ccc",
+						"list-style": "none",
+						"margin": "0",
+						"padding": "0.25rem 0",
+						"position": "absolute",
+					}}
+				>
+					{FRUITS.map((option) => (
+						// eslint-disable-next-line @eslint-react/no-missing-key
+						<li
+							{...getOptionAttributes(option)()}
+							style={{
+								cursor: "pointer",
+								padding: "0.25rem 1rem",
+							}}
+						>
+							{option}
+						</li>
+					))}
+				</ul>
+			)}
+		</div>
 	);
 };
 
@@ -279,7 +350,7 @@ const TreeView = () => {
 			// eslint-disable-next-line @eslint-react/no-missing-key
 			<li>
 				<span
-					{...getTreeItemAttributes(item.id)}
+					{...getTreeItemAttributes(item.id)()}
 					style={{
 						cursor: "pointer",
 						display: "block",
@@ -294,7 +365,7 @@ const TreeView = () => {
 				</span>
 				{item.children && expandedItems().includes(item.id) && (
 					<ul
-						{...getGroupAttributes(item.id)}
+						{...getGroupAttributes(item.id)()}
 						style={{ "padding-left": "1rem" }}
 					>
 						{renderItems(item.children)}
@@ -333,6 +404,9 @@ export const App = () => {
 			</Section>
 			<Section title="Menubar">
 				<Menubar />
+			</Section>
+			<Section title="Select">
+				<Select />
 			</Section>
 			<Section title="Tree View">
 				<TreeView />

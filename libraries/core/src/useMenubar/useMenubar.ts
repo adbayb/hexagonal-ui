@@ -1,6 +1,9 @@
 import type { KeyboardEvent } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
+import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
+
+import { navigateNext, navigatePrevious } from "../shared/navigation";
 
 /**
  * Menubar pattern input.
@@ -19,48 +22,43 @@ export type UseMenubarOutput = {
 		id: string;
 		role: "menubar";
 	}>;
-	getMenuItemAttributes: (item: string) => {
+	getMenuItemAttributes: (item: string) => Reactive<{
 		id: string;
 		onClick: () => void;
 		onKeyDown: (event: KeyboardEvent) => void;
 		role: "menuitem";
 		tabIndex: -1 | 0;
-	};
+	}>;
 };
 
 /**
  * Menubar pattern factory.
- * Menubar pattern factory.
- * @param input - Helpers.
- * @param input.computed - Computed state factory.
- * @param input.state - State manager.
+ * @param frameworkAdapter - Helpers.
+ * @param frameworkAdapter.computed - Computed state factory.
+ * @param frameworkAdapter.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/menubar/
  * @example
- * 	const useMenubar = createUseMenubar({
- * 		computed,
- * 		lifecycle: {
- * 			onDestroy,
- * 			onMount,
- * 		},
- * 		state,
- * 	});
+ * 	const useMenubar = createUseMenubar({ computed, state });
  */
 export const createUseMenubar: PatternFactory<
 	UseMenubarInput,
-	UseMenubarOutput
+	UseMenubarOutput,
+	Pick<FrameworkPort, "computed" | "state">
 > = ({ computed, state }) => {
 	return (input) => {
 		const [activeItem, setActiveItem] = state(input.items.at(0) ?? "");
 		const itemId = (item: string) => `${input.id}-${item}`;
 
-		const handleKeyDown = (event: KeyboardEvent) => {
+		const handleKeyDownFor = (item: string) => (event: KeyboardEvent) => {
 			const { items } = input;
 
 			switch (event.key) {
 				case " ":
 				case "Enter": {
 					event.preventDefault();
+
+					setActiveItem(item);
 
 					break;
 				}
@@ -105,29 +103,17 @@ export const createUseMenubar: PatternFactory<
 				id: input.id,
 				role: "menubar",
 			})),
-			getMenuItemAttributes: (item: string) => ({
-				id: itemId(item),
-				onClick() {
-					setActiveItem(item);
-				},
-				onKeyDown: handleKeyDown,
-				role: "menuitem",
-				tabIndex: item === activeItem() ? 0 : -1,
-			}),
+			getMenuItemAttributes: (item: string) =>
+				computed(() => ({
+					id: itemId(item),
+					// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the item closure for fine-grained reactivity
+					onClick() {
+						setActiveItem(item);
+					},
+					onKeyDown: handleKeyDownFor(item),
+					role: "menuitem",
+					tabIndex: item === activeItem() ? 0 : -1,
+				})),
 		};
 	};
-};
-
-const navigateNext = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const next = index === -1 || index === items.length - 1 ? 0 : index + 1;
-
-	return items[next] ?? current;
-};
-
-const navigatePrevious = (items: string[], current: string): string => {
-	const index = items.indexOf(current);
-	const previous = index <= 0 ? items.length - 1 : index - 1;
-
-	return items[previous] ?? current;
 };

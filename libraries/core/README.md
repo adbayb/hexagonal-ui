@@ -9,7 +9,7 @@
 ## ✨ Features
 
 - **ARIA patterns compliant**: Building blocks implement [WAI-ARIA Authoring Practices Guide (APG) patterns](https://www.w3.org/WAI/ARIA/apg/patterns/), ensuring accessible keyboard interactions, focus management, and ARIA semantics out of the box.
-- **Framework agnostic**: Pattern factories are decoupled from any UI framework. Adapters for React, Solid, and Vue are provided, and custom adapters can be created by injecting framework-specific `lifecycle` and `state` ports.
+- **Framework agnostic**: Pattern factories are decoupled from any UI framework. Adapters for React, Solid, and Vue are provided, and custom adapters can be created by injecting framework-specific `state`, `computed`, `effect`, `ref`, and `lifecycle` ports.
 - **Headless**: No styles are shipped, full control over markup and appearance is left to the consumer.
 
 <br>
@@ -24,25 +24,23 @@ The quickest way to get started is to use one of the pre-built framework package
 import { useButton, useDisclosure } from "@hexagonal-ui/react";
 
 const Button = () => {
-	const { children, props } = useButton({ children: "Click me" });
+	const { getAttributes } = useButton({
+		children: "Click me",
+		isDisabled: false,
+		onPress: () => console.log("pressed"),
+	});
 
-	return <button {...props}>{children()}</button>;
+	return <button {...getAttributes()} />;
 };
 
 const Disclosure = () => {
-	const { isOpen, props } = useDisclosure({
-		"id": "trigger",
-		"aria-controls": "panel",
+	const { getTriggerAttributes, isOpen } = useDisclosure({
+		id: "panel",
 	});
 
 	return (
 		<div>
-			<button
-				{...props}
-				aria-expanded={isOpen()}
-			>
-				Toggle
-			</button>
+			<button {...getTriggerAttributes()}>Toggle</button>
 			{isOpen() && <div id="panel">Content</div>}
 		</div>
 	);
@@ -56,6 +54,10 @@ const App = () => (
 );
 ```
 
+Per-item attribute getters (e.g. `getOptionAttributes(option)`) return a
+reactive getter, so call the result to read the attributes:
+`{...getOptionAttributes(option)()}`.
+
 ### With a custom adapter
 
 Use the pattern factories from `@hexagonal-ui/core` to wire your own framework primitives:
@@ -64,15 +66,22 @@ Use the pattern factories from `@hexagonal-ui/core` to wire your own framework p
 import { createUseButton } from "@hexagonal-ui/core";
 
 export const useButton = createUseButton({
+	computed: myFrameworkComputed,
+	effect: myFrameworkEffect,
 	lifecycle: {
 		onMount: myFrameworkOnMount,
 		onDestroy: myFrameworkOnDestroy,
 	},
+	ref: myFrameworkRef,
 	state: myFrameworkUseState,
 });
 ```
 
-The returned hook exposes stateful values inline (e.g. `isOpen`) and stateless props under a `props` key for easy spreading.
+The returned hook exposes reactive values as getters (e.g. `isOpen()`) and
+attribute objects via `getXxxAttributes()` getters for easy spreading. The
+`computed` port derives reactive values, `effect` runs reactive side effects
+(e.g. focus management), `ref` creates element references, `state` creates
+mutable state, and `lifecycle` hooks into mount/unmount.
 
 <br>
 

@@ -2,12 +2,12 @@
 	"name": "@hexagonal-ui/core",
 	"version": "0.0.0",
 	"description": "Cross-framework and low-level design system building blocks with a focus on customization, interactions, and accessibility",
-	"homepage": "https://github.com/adbayb/hexagonal-ui/tree/main/hexagonal-ui#readme",
+	"homepage": "https://github.com/adbayb/hexagonal-ui#readme",
 	"bugs": "https://github.com/adbayb/hexagonal-ui/issues",
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:adbayb/hexagonal-ui.git",
-		"directory": "core"
+		"directory": "libraries/core"
 	},
 	"license": "MIT",
 	"author": "Ayoub Adib <adbayb@gmail.com> (https://twitter.com/adbayb)",
@@ -18,7 +18,8 @@
 			"source": "./src/index.ts",
 			"require": "./dist/index.cjs",
 			"import": "./dist/index.mjs",
-			"types": "./dist/index.d.ts"
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.mjs"
 		}
 	},
 	"files": [
@@ -27,7 +28,7 @@
 	"scripts": {
 		"build": "quickbundle build",
 		"start": "pnpm watch",
-		"test": "vitest",
+		"test": "vitest run",
 		"watch": "quickbundle watch"
 	},
 	"devDependencies": {

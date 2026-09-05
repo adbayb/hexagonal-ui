@@ -1,6 +1,4 @@
 import type { FocusableElement, UseTreeViewInput } from "@hexagonal-ui/vue";
-import type { VNode } from "vue";
-
 import {
 	useButton,
 	useCombobox,
@@ -11,6 +9,7 @@ import {
 	useSelect,
 	useTreeView,
 } from "@hexagonal-ui/vue";
+import type { VNode } from "vue";
 import { defineComponent } from "vue";
 
 const Section = defineComponent({
@@ -18,24 +17,18 @@ const Section = defineComponent({
 		title: { required: true, type: String },
 	},
 	setup(props, { slots }) {
-		return () => (
-			<section>
-				<h2>{props.title}</h2>
-				{slots.default?.()}
-			</section>
-		);
+		return () => {
+			return (
+				<section>
+					<h2>{props.title}</h2>
+					{slots.default?.()}
+				</section>
+			);
+		};
 	},
 });
 
-const FRUITS = [
-	"Apple",
-	"Banana",
-	"Cherry",
-	"Date",
-	"Elderberry",
-	"Fig",
-	"Grape",
-];
+const FRUITS = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"];
 
 /*
  * Prevent the input from blurring (and the popup from closing) before the
@@ -60,7 +53,7 @@ const Button = defineComponent({
 			 */
 			const { children, ...attributes } = getAttributes();
 
-			// eslint-disable-next-line @eslint-react/dom-no-missing-button-type
+			/* oxlint-disable-next-line react/button-has-type -- `type` comes from the `useButton()` spread below */
 			return <button {...attributes}>{children}</button>;
 		};
 	},
@@ -73,17 +66,19 @@ const Disclosure = defineComponent({
 			id: "vue-panel",
 		});
 
-		return () => (
-			<div>
-				{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-				<button {...getTriggerAttributes()}>
-					{isOpen() ? "Hide" : "Show"} content
-				</button>
-				{isOpen() && (
-					<p id="vue-panel">Disclosed content from Vue 🎉</p>
-				)}
-			</div>
-		);
+		return () => {
+			return (
+				<div>
+					<button
+						type="button"
+						{...getTriggerAttributes()}
+					>
+						{isOpen() ? "Hide" : "Show"} content
+					</button>
+					{isOpen() && <p id="vue-panel">Disclosed content from Vue 🎉</p>}
+				</div>
+			);
+		};
 	},
 });
 
@@ -95,37 +90,36 @@ const Combobox = defineComponent({
 			options: FRUITS,
 		});
 
-		const {
-			filteredOptions,
-			getInputAttributes,
-			getOptionAttributes,
-			isOpen,
-			selectedOption,
-		} = combobox;
+		const { filteredOptions, getInputAttributes, getOptionAttributes, isOpen, selectedOption } =
+			combobox;
 
-		return () => (
-			<div>
-				<input {...getInputAttributes()} />
-				{isOpen() && (
-					<ul
-						id="vue-listbox"
-						role="listbox"
-					>
-						{filteredOptions().map((option) => (
-							<li
-								key={option}
-								{...getOptionAttributes(option)()}
-								// eslint-disable-next-line @eslint-react/dom-no-unknown-property
-								onMousedown={keepFocusOnMouseDown}
-							>
-								{option}
-							</li>
-						))}
-					</ul>
-				)}
-				{selectedOption() && <p>Selected: {selectedOption()}</p>}
-			</div>
-		);
+		return () => {
+			return (
+				<div>
+					<input {...getInputAttributes()} />
+					{isOpen() && (
+						<ul
+							id="vue-listbox"
+							role="listbox"
+						>
+							{filteredOptions().map((option) => {
+								return (
+									<li
+										key={option}
+										{...getOptionAttributes(option)()}
+										// eslint-disable-next-line @eslint-react/dom-no-unknown-property
+										onMousedown={keepFocusOnMouseDown}
+									>
+										{option}
+									</li>
+								);
+							})}
+						</ul>
+					)}
+					{selectedOption() && <p>Selected: {selectedOption()}</p>}
+				</div>
+			);
+		};
 	},
 });
 
@@ -158,18 +152,14 @@ const Listbox = defineComponent({
 											: "transparent",
 										cursor: "pointer",
 										display: "flex",
-										fontWeight: attributes["aria-selected"]
-											? "bold"
-											: "normal",
+										fontWeight: attributes["aria-selected"] ? "bold" : "normal",
 										gap: "0.5rem",
 										padding: "0.25rem 0.5rem",
 									}}
 								>
 									<span
 										style={{
-											visibility: attributes[
-												"aria-selected"
-											]
+											visibility: attributes["aria-selected"]
 												? "visible"
 												: "hidden",
 										}}
@@ -194,10 +184,11 @@ const NAV_ITEMS = ["File", "Edit", "View", "Help"];
  * Vue's VNodeRef passes `Element | ComponentPublicInstance`, which is wider
  * than the core's `FocusableElement`, so adapt it at the boundary.
  */
-const toFocusableRef =
-	(setter: (node: FocusableElement | null) => void) => (node: unknown) => {
+const toFocusableRef = (setter: (node: FocusableElement | null) => void) => {
+	return (node: unknown) => {
 		setter(node as FocusableElement | null);
 	};
+};
 
 const Menu = defineComponent({
 	setup() {
@@ -220,11 +211,11 @@ const Menu = defineComponent({
 		return () => {
 			return (
 				<div style={{ position: "relative" }}>
-					{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
 					<button
 						{...getTriggerAttributes()}
 						// eslint-disable-next-line @eslint-react/refs -- not a React ref: plain setter from useMenu, adapted for Vue's VNodeRef
 						ref={toFocusableRef(triggerRef)}
+						type="button"
 					>
 						Actions ▾
 					</button>
@@ -242,18 +233,20 @@ const Menu = defineComponent({
 								position: "absolute",
 							}}
 						>
-							{ACTIONS.map((action) => (
-								<li
-									key={action}
-									{...getMenuItemAttributes(action)()}
-									style={{
-										cursor: "pointer",
-										padding: "0.25rem 1rem",
-									}}
-								>
-									{action}
-								</li>
-							))}
+							{ACTIONS.map((action) => {
+								return (
+									<li
+										key={action}
+										{...getMenuItemAttributes(action)()}
+										style={{
+											cursor: "pointer",
+											padding: "0.25rem 1rem",
+										}}
+									>
+										{action}
+									</li>
+								);
+							})}
 						</ul>
 					)}
 				</div>
@@ -270,48 +263,44 @@ const Menubar = defineComponent({
 			items: NAV_ITEMS,
 		});
 
-		const { activeItem, getMenubarAttributes, getMenuItemAttributes } =
-			menubar;
+		const { activeItem, getMenubarAttributes, getMenuItemAttributes } = menubar;
 
-		return () => (
-			<ul
-				{...getMenubarAttributes()}
-				style={{
-					display: "flex",
-					gap: "0.25rem",
-					listStyle: "none",
-					padding: "0",
-				}}
-			>
-				{NAV_ITEMS.map((item) => {
-					const itemAttributes = getMenuItemAttributes(item)();
+		return () => {
+			return (
+				<ul
+					{...getMenubarAttributes()}
+					style={{
+						display: "flex",
+						gap: "0.25rem",
+						listStyle: "none",
+						padding: "0",
+					}}
+				>
+					{NAV_ITEMS.map((item) => {
+						const itemAttributes = getMenuItemAttributes(item)();
 
-					return (
-						<li key={item}>
-							{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-							<button
-								{...itemAttributes}
-								style={{
-									background:
-										activeItem() === item
-											? "#e0f2fe"
-											: "transparent",
-									border: "none",
-									cursor: "pointer",
-									fontWeight:
-										activeItem() === item
-											? "bold"
-											: "normal",
-									padding: "0.25rem 0.75rem",
-								}}
-							>
-								{item}
-							</button>
-						</li>
-					);
-				})}
-			</ul>
-		);
+						return (
+							<li key={item}>
+								<button
+									{...itemAttributes}
+									style={{
+										background:
+											activeItem() === item ? "#e0f2fe" : "transparent",
+										border: "none",
+										cursor: "pointer",
+										fontWeight: activeItem() === item ? "bold" : "normal",
+										padding: "0.25rem 0.75rem",
+									}}
+									type="button"
+								>
+									{item}
+								</button>
+							</li>
+						);
+					})}
+				</ul>
+			);
+		};
 	},
 });
 
@@ -332,43 +321,46 @@ const Select = defineComponent({
 			selectedOption,
 		} = select;
 
-		return () => (
-			<div style={{ position: "relative" }}>
-				{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-				<button {...getTriggerAttributes()}>
-					{selectedOption() === ""
-						? "Choose a fruit"
-						: selectedOption()}{" "}
-					▾
-				</button>
-				{isOpen() && (
-					<ul
-						{...getListboxAttributes()}
-						style={{
-							background: "#fff",
-							border: "1px solid #ccc",
-							listStyle: "none",
-							margin: "0",
-							padding: "0.25rem 0",
-							position: "absolute",
-						}}
+		return () => {
+			return (
+				<div style={{ position: "relative" }}>
+					<button
+						type="button"
+						{...getTriggerAttributes()}
 					>
-						{FRUITS.map((option) => (
-							<li
-								key={option}
-								{...getOptionAttributes(option)()}
-								style={{
-									cursor: "pointer",
-									padding: "0.25rem 1rem",
-								}}
-							>
-								{option}
-							</li>
-						))}
-					</ul>
-				)}
-			</div>
-		);
+						{selectedOption() === "" ? "Choose a fruit" : selectedOption()} ▾
+					</button>
+					{isOpen() && (
+						<ul
+							{...getListboxAttributes()}
+							style={{
+								background: "#fff",
+								border: "1px solid #ccc",
+								listStyle: "none",
+								margin: "0",
+								padding: "0.25rem 0",
+								position: "absolute",
+							}}
+						>
+							{FRUITS.map((option) => {
+								return (
+									<li
+										key={option}
+										{...getOptionAttributes(option)()}
+										style={{
+											cursor: "pointer",
+											padding: "0.25rem 1rem",
+										}}
+									>
+										{option}
+									</li>
+								);
+							})}
+						</ul>
+					)}
+				</div>
+			);
+		};
 	},
 });
 
@@ -400,7 +392,9 @@ const TREE_ITEMS: UseTreeViewInput["items"] = [
 ];
 
 const getItemPrefix = (hasChildren: boolean, isExpanded: boolean): string => {
-	if (!hasChildren) return "  ";
+	if (!hasChildren) {
+		return "  ";
+	}
 
 	return isExpanded ? "▾ " : "▸ ";
 };
@@ -410,40 +404,39 @@ const TreeView = defineComponent({
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
 		const treeView = useTreeView({ id: "vue-tree", items: TREE_ITEMS });
 
-		const {
-			expandedItems,
-			getGroupAttributes,
-			getTreeAttributes,
-			getTreeItemAttributes,
-		} = treeView;
+		const { expandedItems, getGroupAttributes, getTreeAttributes, getTreeItemAttributes } =
+			treeView;
 
-		const renderItems = (items: UseTreeViewInput["items"]): VNode[] =>
-			items.map((item) => (
-				<li key={item.id}>
-					<span
-						{...getTreeItemAttributes(item.id)()}
-						style={{
-							cursor: "pointer",
-							display: "block",
-							padding: "0.125rem 0.25rem",
-						}}
-					>
-						{getItemPrefix(
-							(item.children?.length ?? 0) > 0,
-							expandedItems().includes(item.id),
-						)}
-						{item.label}
-					</span>
-					{item.children && expandedItems().includes(item.id) && (
-						<ul
-							{...getGroupAttributes(item.id)()}
-							style={{ paddingLeft: "1rem" }}
+		const renderItems = (items: UseTreeViewInput["items"]): VNode[] => {
+			return items.map((item) => {
+				return (
+					<li key={item.id}>
+						<span
+							{...getTreeItemAttributes(item.id)()}
+							style={{
+								cursor: "pointer",
+								display: "block",
+								padding: "0.125rem 0.25rem",
+							}}
 						>
-							{renderItems(item.children)}
-						</ul>
-					)}
-				</li>
-			));
+							{getItemPrefix(
+								(item.children?.length ?? 0) > 0,
+								expandedItems().includes(item.id),
+							)}
+							{item.label}
+						</span>
+						{item.children && expandedItems().includes(item.id) && (
+							<ul
+								{...getGroupAttributes(item.id)()}
+								style={{ paddingLeft: "1rem" }}
+							>
+								{renderItems(item.children)}
+							</ul>
+						)}
+					</li>
+				);
+			});
+		};
 
 		return () => {
 			return (
@@ -458,31 +451,33 @@ const TreeView = defineComponent({
 	},
 });
 
-export const App = () => (
-	<>
-		<Section title="Button">
-			<Button />
-		</Section>
-		<Section title="Disclosure">
-			<Disclosure />
-		</Section>
-		<Section title="Combobox">
-			<Combobox />
-		</Section>
-		<Section title="Listbox">
-			<Listbox />
-		</Section>
-		<Section title="Menu">
-			<Menu />
-		</Section>
-		<Section title="Menubar">
-			<Menubar />
-		</Section>
-		<Section title="Select">
-			<Select />
-		</Section>
-		<Section title="Tree View">
-			<TreeView />
-		</Section>
-	</>
-);
+export const App = () => {
+	return (
+		<>
+			<Section title="Button">
+				<Button />
+			</Section>
+			<Section title="Disclosure">
+				<Disclosure />
+			</Section>
+			<Section title="Combobox">
+				<Combobox />
+			</Section>
+			<Section title="Listbox">
+				<Listbox />
+			</Section>
+			<Section title="Menu">
+				<Menu />
+			</Section>
+			<Section title="Menubar">
+				<Menubar />
+			</Section>
+			<Section title="Select">
+				<Select />
+			</Section>
+			<Section title="Tree View">
+				<TreeView />
+			</Section>
+		</>
+	);
+};

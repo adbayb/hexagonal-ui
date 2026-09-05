@@ -1,13 +1,14 @@
 /**
- * Circular next-item navigation shared by list-driven patterns
- * (listbox, menu, menubar, select).
+ * Circular next-item navigation shared by list-driven patterns (listbox, menu, menubar, select).
+ *
+ * @example
+ * 	```ts
+ * 	navigateNext(["a", "b"], "b"); // "a"
+ * 	```;
+ *
  * @param values - Ordered values to navigate.
  * @param current - Currently active value.
  * @returns Next value, wrapping around to the first one.
- * @example
- * ```ts
- * navigateNext(["a", "b"], "b"); // "a"
- * ```
  */
 export const navigateNext = (values: string[], current: string): string => {
 	const index = values.indexOf(current);
@@ -17,15 +18,17 @@ export const navigateNext = (values: string[], current: string): string => {
 };
 
 /**
- * Circular previous-item navigation shared by list-driven patterns
- * (listbox, menu, menubar, select).
+ * Circular previous-item navigation shared by list-driven patterns (listbox, menu, menubar,
+ * select).
+ *
+ * @example
+ * 	```ts
+ * 	navigatePrevious(["a", "b"], "a"); // "b"
+ * 	```;
+ *
  * @param values - Ordered values to navigate.
  * @param current - Currently active value.
  * @returns Previous value, wrapping around to the last one.
- * @example
- * ```ts
- * navigatePrevious(["a", "b"], "a"); // "b"
- * ```
  */
 export const navigatePrevious = (values: string[], current: string): string => {
 	const index = values.indexOf(current);

@@ -442,10 +442,7 @@ type PatternFactory<Input, Output, P extends Partial<Ports> = Ports> = (
 Allow `PatternFactory` to accept other patterns as dependencies:
 
 ```ts
-type PatternFactory<Req, Res, Deps = {}> = (
-	ports: Ports,
-	deps: Deps,
-) => (input: Req) => Res;
+type PatternFactory<Req, Res, Deps = {}> = (ports: Ports, deps: Deps) => (input: Req) => Res;
 ```
 
 Enables `useSelect = createUseSelect(ports, { useButton, useListbox })`.

@@ -3,18 +3,22 @@ import type { FrameworkPort } from "./Port";
 
 /**
  * In-memory state port backed by a plain closure variable.
+ *
+ * @example
+ * 	```ts
+ * 	const [getCount, setCount] = mockState(0);
+ * 	```;
+ *
  * @param initialState - Initial value.
  * @returns Getter/setter tuple.
- * @example
- * ```ts
- * const [getCount, setCount] = mockState(0);
- * ```
  */
 const mockState: FrameworkPort["state"] = (initialState) => {
 	let value = initialState;
 
 	return [
-		() => value,
+		() => {
+			return value;
+		},
 		(newValue) => {
 			value = newValue;
 		},
@@ -23,18 +27,24 @@ const mockState: FrameworkPort["state"] = (initialState) => {
 
 /**
  * In-memory ref port backed by a plain closure variable.
+ *
+ * @example
+ * 	```ts
+ * 	const [getNode, setNode] = mockReference(null);
+ * 	```;
+ *
  * @param initialValue - Initial referenced value.
  * @returns Getter/setter tuple.
- * @example
- * ```ts
- * const [getNode, setNode] = mockReference(null);
- * ```
  */
-const mockReference: FrameworkPort["ref"] = (initialValue = null) => {
-	let value = initialValue;
+const mockReference = <Value>(
+	initialValue: null | Value = null,
+): readonly [() => null | Value, (newValue: null | Value) => void] => {
+	let value: null | Value = initialValue;
 
 	return [
-		() => value,
+		() => {
+			return value;
+		},
 		(newValue) => {
 			value = newValue;
 		},
@@ -42,43 +52,52 @@ const mockReference: FrameworkPort["ref"] = (initialValue = null) => {
 };
 
 /**
- * In-memory ports for unit testing pattern factories as pure logic.
- * No JSDOM or framework runtime required.
- * @returns Mock ports plus a helper to re-run collected effects.
+ * In-memory ports for unit testing pattern factories as pure logic. No JSDOM or framework runtime
+ * required.
+ *
  * @example
- * ```ts
- * const { ports } = createMockPorts();
- * const useDisclosure = createUseDisclosure(ports);
- * ```
+ * 	```ts
+ * 	const { ports } = createMockPorts();
+ * 	const useDisclosure = createUseDisclosure(ports);
+ * 	```;
+ *
+ * @returns Mock ports plus a helper to re-run collected effects.
  */
 export const createMockPorts = () => {
 	const effects: (() => unknown)[] = [];
 
 	const ports: FrameworkPort = {
-		computed: (function_) => function_,
+		ref: mockReference,
+		computed: (function_) => {
+			return function_;
+		},
 		effect: (effect) => {
 			effects.push(effect);
 			effect();
 		},
 		lifecycle: {
-			onDestroy: () => undefined,
+			onDestroy: () => {
+				return undefined;
+			},
 			onMount: (callback) => {
 				callback();
 			},
 		},
-		ref: mockReference,
 		state: mockState,
 	};
 
 	/**
 	 * Runs collected effects again after state changes.
+	 *
 	 * @example
-	 * ```ts
-	 * runEffects();
-	 * ```
+	 * 	```ts
+	 * 	runEffects();
+	 * 	```;
 	 */
 	const runEffects = () => {
-		for (const effect of effects) effect();
+		for (const effect of effects) {
+			effect();
+		}
 	};
 
 	return { ports, runEffects };
@@ -86,67 +105,87 @@ export const createMockPorts = () => {
 
 /**
  * Minimal keyboard event stub for pattern tests.
+ *
+ * @example
+ * 	```ts
+ * 	onKeyDown(mockKeyboardEvent("ArrowDown"));
+ * 	```;
+ *
  * @param key - Value for the `key` property.
  * @returns Stub event with a `preventDefault` no-op.
- * @example
- * ```ts
- * onKeyDown(mockKeyboardEvent("ArrowDown"));
- * ```
  */
-export const mockKeyboardEvent = (key: string): KeyboardEvent => ({
-	key,
-	preventDefault: () => undefined,
-});
+export const mockKeyboardEvent = (key: string): KeyboardEvent => {
+	return {
+		key,
+		preventDefault: () => {
+			return undefined;
+		},
+	};
+};
 
 /**
  * Minimal event stub for pattern tests.
+ *
+ * @example
+ * 	```ts
+ * 	onClick(mockEvent());
+ * 	```;
+ *
  * @param type - Value for the `type` property.
  * @returns Stub event with no-op methods.
- * @example
- * ```ts
- * onClick(mockEvent());
- * ```
  */
-export const mockEvent = (type = "click"): Event => ({
-	bubbles: false,
-	cancelable: false,
-	currentTarget: null,
-	defaultPrevented: false,
-	eventPhase: 0,
-	isTrusted: false,
-	preventDefault: () => undefined,
-	stopPropagation: () => undefined,
-	target: null,
-	timeStamp: 0,
-	type,
-});
+export const mockEvent = (type = "click"): Event => {
+	return {
+		bubbles: false,
+		cancelable: false,
+		currentTarget: null,
+		defaultPrevented: false,
+		eventPhase: 0,
+		isTrusted: false,
+		preventDefault: () => {
+			return undefined;
+		},
+		stopPropagation: () => {
+			return undefined;
+		},
+		target: null,
+		timeStamp: 0,
+		type,
+	};
+};
 
 /**
  * Minimal input event stub carrying a text value.
+ *
+ * @example
+ * 	```ts
+ * 	onInput(mockInputEvent("ap"));
+ * 	```;
+ *
  * @param value - Value exposed as `target.value`.
  * @returns Stub input event.
- * @example
- * ```ts
- * onInput(mockInputEvent("ap"));
- * ```
  */
-export const mockInputEvent = (value: string): Event => ({
-	...mockEvent("input"),
-	target: { value } as unknown as EventTarget,
-});
+export const mockInputEvent = (value: string): Event => {
+	return {
+		...mockEvent("input"),
+		target: { value } as unknown as EventTarget,
+	};
+};
 
 /**
  * Minimal focus event stub carrying the element gaining focus.
+ *
+ * @example
+ * 	```ts
+ * 	onBlur(mockFocusEvent());
+ * 	```;
+ *
  * @param relatedTarget - Element receiving focus, if any.
  * @returns Stub focus event.
- * @example
- * ```ts
- * onBlur(mockFocusEvent());
- * ```
  */
-export const mockFocusEvent = (
-	relatedTarget: EventTarget | null = null,
-): FocusEvent => ({
-	...mockEvent("blur"),
-	relatedTarget,
-});
+export const mockFocusEvent = (relatedTarget: EventTarget | null = null): FocusEvent => {
+	return {
+		...mockEvent("blur"),
+		relatedTarget,
+	};
+};

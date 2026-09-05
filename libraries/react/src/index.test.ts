@@ -1,8 +1,7 @@
 import { describe, expect, test } from "vitest";
-
 import { frameworkAdapter } from "./adapters";
 
-describe("frameworkAdapter", () => {
+describe("framework adapter", () => {
 	test("should expose all required ports", () => {
 		expect(frameworkAdapter.computed).toBeTypeOf("function");
 		expect(frameworkAdapter.effect).toBeTypeOf("function");

@@ -1,9 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyFunction = (...arguments_: any[]) => any;
-
+export type AnyFunction = (...arguments_: never[]) => unknown;
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type AnyObject = {};
-
+export type AnyObject = Record<string, Reactive<Value> | Value>;
 export type Reactive<Input = unknown> = () => Input;
 
 export type Value =

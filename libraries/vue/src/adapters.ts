@@ -1,29 +1,28 @@
 import type { FrameworkPort } from "@hexagonal-ui/core";
-
-import {
-	computed as computedVue,
-	onMounted,
-	onUnmounted,
-	ref as refVue,
-	watchEffect,
-} from "vue";
+import { computed as computedVue, onMounted, onUnmounted, ref as refVue, watchEffect } from "vue";
 
 const state: FrameworkPort["state"] = (initialState) => {
 	const stateAsRef = refVue(initialState);
 
 	return [
-		() => stateAsRef.value as typeof initialState,
+		() => {
+			return stateAsRef.value as typeof initialState;
+		},
 		(value) => {
 			stateAsRef.value = value;
 		},
 	] as const;
 };
 
-const ref: FrameworkPort["ref"] = (initialValue = null) => {
-	const referenceAsRef = refVue(initialValue);
+const ref = <Value>(
+	initialValue: null | Value = null,
+): readonly [() => null | Value, (newValue: null | Value) => void] => {
+	const referenceAsRef = refVue<null | Value>(initialValue);
 
 	return [
-		() => referenceAsRef.value as typeof initialValue,
+		() => {
+			return referenceAsRef.value as typeof initialValue;
+		},
 		(value) => {
 			referenceAsRef.value = value;
 		},
@@ -35,6 +34,8 @@ const ref: FrameworkPort["ref"] = (initialValue = null) => {
  * Remap framework-level keyboard handlers to the working `onKeydown` spelling
  * so examples can spread attributes directly like React/Solid.
  */
+const KEY_HANDLER_PATTERN = /^onKey[A-Z]/u;
+
 const remapEventProps = <Value>(value: Value): Value => {
 	if (value === null || typeof value !== "object" || Array.isArray(value)) {
 		return value;
@@ -43,7 +44,7 @@ const remapEventProps = <Value>(value: Value): Value => {
 	const remapped: Record<string, unknown> = {};
 
 	for (const [key, property] of Object.entries(value)) {
-		const fixed = /^onKey[A-Z]/.test(key)
+		const fixed = KEY_HANDLER_PATTERN.test(key)
 			? `onKey${key.slice(5, 6).toLowerCase()}${key.slice(6)}`
 			: key;
 
@@ -56,15 +57,23 @@ const remapEventProps = <Value>(value: Value): Value => {
 };
 
 const computed: FrameworkPort["computed"] = (function_) => {
-	const c = computedVue(() => remapEventProps(function_()));
+	const c = computedVue(() => {
+		return remapEventProps(function_());
+	});
 
-	return () => c.value;
+	return () => {
+		return c.value;
+	};
 };
 
 export const frameworkAdapter: FrameworkPort = {
-	computed,
-	effect: watchEffect,
-	lifecycle: { onDestroy: onUnmounted, onMount: onMounted },
 	ref,
+	computed,
+	effect: (effect) => {
+		watchEffect(() => {
+			effect();
+		});
+	},
+	lifecycle: { onDestroy: onUnmounted, onMount: onMounted },
 	state,
 };

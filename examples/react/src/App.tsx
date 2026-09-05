@@ -1,5 +1,4 @@
 import type { UseTreeViewInput } from "@hexagonal-ui/react";
-
 import {
 	useButton,
 	useCombobox,
@@ -13,22 +12,16 @@ import {
 
 type SectionProps = { children: React.ReactNode; title: string };
 
-const Section = ({ children, title }: SectionProps) => (
-	<section>
-		<h2>{title}</h2>
-		{children}
-	</section>
-);
+const Section = ({ children, title }: SectionProps) => {
+	return (
+		<section>
+			<h2>{title}</h2>
+			{children}
+		</section>
+	);
+};
 
-const FRUITS = [
-	"Apple",
-	"Banana",
-	"Cherry",
-	"Date",
-	"Elderberry",
-	"Fig",
-	"Grape",
-];
+const FRUITS = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape"];
 
 /*
  * Prevent the input from blurring (and the popup from closing) before the
@@ -44,7 +37,7 @@ const Button = () => {
 		isDisabled: false,
 	});
 
-	// eslint-disable-next-line @eslint-react/dom-no-missing-button-type
+	/* oxlint-disable-next-line react/button-has-type -- `type` comes from the `useButton()` spread below */
 	return <button {...getAttributes()} />;
 };
 
@@ -55,28 +48,23 @@ const Disclosure = () => {
 
 	return (
 		<div>
-			{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-			<button {...getTriggerAttributes()}>
+			<button
+				type="button"
+				{...getTriggerAttributes()}
+			>
 				{isOpen() ? "Hide" : "Show"} content
 			</button>
-			{isOpen() && (
-				<p id="react-panel">Disclosed content from React 🎉</p>
-			)}
+			{isOpen() && <p id="react-panel">Disclosed content from React 🎉</p>}
 		</div>
 	);
 };
 
 const Combobox = () => {
-	const {
-		filteredOptions,
-		getInputAttributes,
-		getOptionAttributes,
-		isOpen,
-		selectedOption,
-	} = useCombobox({
-		id: "react-listbox",
-		options: FRUITS,
-	});
+	const { filteredOptions, getInputAttributes, getOptionAttributes, isOpen, selectedOption } =
+		useCombobox({
+			id: "react-listbox",
+			options: FRUITS,
+		});
 
 	return (
 		<div>
@@ -86,15 +74,17 @@ const Combobox = () => {
 					id="react-listbox"
 					role="listbox"
 				>
-					{filteredOptions().map((option) => (
-						<li
-							key={option}
-							{...getOptionAttributes(option)()}
-							onMouseDown={keepFocusOnMouseDown}
-						>
-							{option}
-						</li>
-					))}
+					{filteredOptions().map((option) => {
+						return (
+							<li
+								key={option}
+								{...getOptionAttributes(option)()}
+								onMouseDown={keepFocusOnMouseDown}
+							>
+								{option}
+							</li>
+						);
+					})}
 				</ul>
 			)}
 			{selectedOption() && <p>Selected: {selectedOption()}</p>}
@@ -123,23 +113,17 @@ const Listbox = () => {
 							{...attributes}
 							style={{
 								alignItems: "center",
-								background: attributes["aria-selected"]
-									? "#e0f2fe"
-									: "transparent",
+								background: attributes["aria-selected"] ? "#e0f2fe" : "transparent",
 								cursor: "pointer",
 								display: "flex",
-								fontWeight: attributes["aria-selected"]
-									? "bold"
-									: "normal",
+								fontWeight: attributes["aria-selected"] ? "bold" : "normal",
 								gap: "0.5rem",
 								padding: "0.25rem 0.5rem",
 							}}
 						>
 							<span
 								style={{
-									visibility: attributes["aria-selected"]
-										? "visible"
-										: "hidden",
+									visibility: attributes["aria-selected"] ? "visible" : "hidden",
 								}}
 							>
 								✓
@@ -172,10 +156,10 @@ const Menu = () => {
 
 	return (
 		<div style={{ position: "relative" }}>
-			{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
 			<button
 				{...getTriggerAttributes()}
 				ref={triggerRef}
+				type="button"
 			>
 				Actions ▾
 			</button>
@@ -192,18 +176,20 @@ const Menu = () => {
 						position: "absolute",
 					}}
 				>
-					{ACTIONS.map((action) => (
-						<li
-							key={action}
-							{...getMenuItemAttributes(action)()}
-							style={{
-								cursor: "pointer",
-								padding: "0.25rem 1rem",
-							}}
-						>
-							{action}
-						</li>
-					))}
+					{ACTIONS.map((action) => {
+						return (
+							<li
+								key={action}
+								{...getMenuItemAttributes(action)()}
+								style={{
+									cursor: "pointer",
+									padding: "0.25rem 1rem",
+								}}
+							>
+								{action}
+							</li>
+						);
+					})}
 				</ul>
 			)}
 		</div>
@@ -211,11 +197,10 @@ const Menu = () => {
 };
 
 const Menubar = () => {
-	const { activeItem, getMenubarAttributes, getMenuItemAttributes } =
-		useMenubar({
-			id: "react-menubar",
-			items: NAV_ITEMS,
-		});
+	const { activeItem, getMenubarAttributes, getMenuItemAttributes } = useMenubar({
+		id: "react-menubar",
+		items: NAV_ITEMS,
+	});
 
 	return (
 		<ul
@@ -227,27 +212,25 @@ const Menubar = () => {
 				padding: 0,
 			}}
 		>
-			{NAV_ITEMS.map((item) => (
-				<li key={item}>
-					{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-					<button
-						{...getMenuItemAttributes(item)()}
-						style={{
-							background:
-								activeItem() === item
-									? "#e0f2fe"
-									: "transparent",
-							border: "none",
-							cursor: "pointer",
-							fontWeight:
-								activeItem() === item ? "bold" : "normal",
-							padding: "0.25rem 0.75rem",
-						}}
-					>
-						{item}
-					</button>
-				</li>
-			))}
+			{NAV_ITEMS.map((item) => {
+				return (
+					<li key={item}>
+						<button
+							{...getMenuItemAttributes(item)()}
+							style={{
+								background: activeItem() === item ? "#e0f2fe" : "transparent",
+								border: "none",
+								cursor: "pointer",
+								fontWeight: activeItem() === item ? "bold" : "normal",
+								padding: "0.25rem 0.75rem",
+							}}
+							type="button"
+						>
+							{item}
+						</button>
+					</li>
+				);
+			})}
 		</ul>
 	);
 };
@@ -267,10 +250,11 @@ const Select = () => {
 
 	return (
 		<div style={{ position: "relative" }}>
-			{/* eslint-disable-next-line @eslint-react/dom-no-missing-button-type */}
-			<button {...getTriggerAttributes()}>
-				{selectedOption() === "" ? "Choose a fruit" : selectedOption()}{" "}
-				▾
+			<button
+				type="button"
+				{...getTriggerAttributes()}
+			>
+				{selectedOption() === "" ? "Choose a fruit" : selectedOption()} ▾
 			</button>
 			{isOpen() && (
 				<ul
@@ -284,18 +268,20 @@ const Select = () => {
 						position: "absolute",
 					}}
 				>
-					{FRUITS.map((option) => (
-						<li
-							key={option}
-							{...getOptionAttributes(option)()}
-							style={{
-								cursor: "pointer",
-								padding: "0.25rem 1rem",
-							}}
-						>
-							{option}
-						</li>
-					))}
+					{FRUITS.map((option) => {
+						return (
+							<li
+								key={option}
+								{...getOptionAttributes(option)()}
+								style={{
+									cursor: "pointer",
+									padding: "0.25rem 1rem",
+								}}
+							>
+								{option}
+							</li>
+						);
+					})}
 				</ul>
 			)}
 		</div>
@@ -330,46 +316,47 @@ const TREE_ITEMS: UseTreeViewInput["items"] = [
 ];
 
 const getItemPrefix = (hasChildren: boolean, isExpanded: boolean): string => {
-	if (!hasChildren) return "  ";
+	if (!hasChildren) {
+		return "  ";
+	}
 
 	return isExpanded ? "▾ " : "▸ ";
 };
 
 const TreeView = () => {
-	const {
-		expandedItems,
-		getGroupAttributes,
-		getTreeAttributes,
-		getTreeItemAttributes,
-	} = useTreeView({ id: "react-tree", items: TREE_ITEMS });
+	const { expandedItems, getGroupAttributes, getTreeAttributes, getTreeItemAttributes } =
+		useTreeView({ id: "react-tree", items: TREE_ITEMS });
 
-	const renderItems = (items: UseTreeViewInput["items"]): React.ReactNode =>
-		items.map((item) => (
-			<li key={item.id}>
-				<span
-					{...getTreeItemAttributes(item.id)()}
-					style={{
-						cursor: "pointer",
-						display: "block",
-						padding: "0.125rem 0.25rem",
-					}}
-				>
-					{getItemPrefix(
-						(item.children?.length ?? 0) > 0,
-						expandedItems().includes(item.id),
-					)}
-					{item.label}
-				</span>
-				{item.children && expandedItems().includes(item.id) && (
-					<ul
-						{...getGroupAttributes(item.id)()}
-						style={{ paddingLeft: "1rem" }}
+	const renderItems = (items: UseTreeViewInput["items"]): React.ReactNode => {
+		return items.map((item) => {
+			return (
+				<li key={item.id}>
+					<span
+						{...getTreeItemAttributes(item.id)()}
+						style={{
+							cursor: "pointer",
+							display: "block",
+							padding: "0.125rem 0.25rem",
+						}}
 					>
-						{renderItems(item.children)}
-					</ul>
-				)}
-			</li>
-		));
+						{getItemPrefix(
+							(item.children?.length ?? 0) > 0,
+							expandedItems().includes(item.id),
+						)}
+						{item.label}
+					</span>
+					{item.children && expandedItems().includes(item.id) && (
+						<ul
+							{...getGroupAttributes(item.id)()}
+							style={{ paddingLeft: "1rem" }}
+						>
+							{renderItems(item.children)}
+						</ul>
+					)}
+				</li>
+			);
+		});
+	};
 
 	return (
 		<ul

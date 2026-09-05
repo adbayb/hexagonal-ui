@@ -3,26 +3,20 @@ import type { PatternFactory } from "../shared/Pattern";
 import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
 
-/**
- * A single node in the tree. Children make a branch; absence makes a leaf.
- */
+/** A single node in the tree. Children make a branch; absence makes a leaf. */
 export type TreeItem = {
 	children?: TreeItem[];
 	id: string;
 	label: string;
 };
 
-/**
- * TreeView pattern input.
- */
+/** TreeView pattern input. */
 export type UseTreeViewInput = {
 	id: string;
 	items: TreeItem[];
 };
 
-/**
- * TreeView pattern output.
- */
+/** TreeView pattern output. */
 export type UseTreeViewOutput = {
 	expandedItems: Reactive<string[]>;
 	getGroupAttributes: (parentId: string) => Reactive<{
@@ -30,19 +24,19 @@ export type UseTreeViewOutput = {
 		"role": "group";
 	}>;
 	getTreeAttributes: Reactive<{
-		"aria-activedescendant": string;
 		"id": string;
+		"aria-activedescendant": string;
 		"onKeyDown": (event: KeyboardEvent) => void;
 		"role": "tree";
 		"tabIndex": 0;
 	}>;
 	getTreeItemAttributes: (itemId: string) => Reactive<{
+		"id": string;
 		"aria-expanded": boolean | undefined;
 		"aria-level": number;
 		"aria-posinset": number;
 		"aria-selected": boolean;
 		"aria-setsize": number;
-		"id": string;
 		"onClick": () => void;
 		"role": "treeitem";
 		"tabIndex": -1;
@@ -51,16 +45,17 @@ export type UseTreeViewOutput = {
 };
 
 /**
- * Tree View pattern factory.
- * Focus stays on the tree container and the active node is exposed via
+ * Tree View pattern factory. Focus stays on the tree container and the active node is exposed via
  * `aria-activedescendant`, so treeitems keep `tabIndex: -1`.
+ *
+ * @example
+ * 	const useTreeView = createUseTreeView({ computed, state });
+ *
  * @param frameworkAdapter - Helpers.
  * @param frameworkAdapter.computed - Computed state factory.
  * @param frameworkAdapter.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/treeview/
- * @example
- * 	const useTreeView = createUseTreeView({ computed, state });
  */
 export const createUseTreeView: PatternFactory<
 	UseTreeViewInput,
@@ -72,7 +67,10 @@ export const createUseTreeView: PatternFactory<
 		const [selectedItem, setSelectedItem] = state("");
 		const [expandedItems, setExpandedItems] = state<string[]>([]);
 		const [typeahead, setTypeahead] = state({ query: "", timestamp: 0 });
-		const itemId = (id: string) => `${input.id}-${id}`;
+
+		const itemId = (id: string) => {
+			return `${input.id}-${id}`;
+		};
 
 		const handleItemClick = (id: string) => {
 			setActiveItem(id);
@@ -84,7 +82,9 @@ export const createUseTreeView: PatternFactory<
 			if (hasChildren) {
 				setExpandedItems(
 					expandedItems().includes(id)
-						? expandedItems().filter((eid) => eid !== id)
+						? expandedItems().filter((eid) => {
+								return eid !== id;
+							})
 						: [...expandedItems(), id],
 				);
 			}
@@ -111,28 +111,20 @@ export const createUseTreeView: PatternFactory<
 				case " ":
 				case "Enter": {
 					event.preventDefault();
-
 					setSelectedItem(activeItem());
 
 					break;
 				}
 				case "ArrowDown": {
 					event.preventDefault();
-
-					setActiveItem(
-						navigateNext(items, expandedItems(), activeItem()),
-					);
+					setActiveItem(navigateNext(items, expandedItems(), activeItem()));
 
 					break;
 				}
 				case "ArrowLeft": {
 					event.preventDefault();
 
-					const left = applyArrowLeft(
-						items,
-						expandedItems(),
-						activeItem(),
-					);
+					const left = applyArrowLeft(items, expandedItems(), activeItem());
 
 					setActiveItem(left.activeItem);
 					setExpandedItems(left.expandedItems);
@@ -142,11 +134,7 @@ export const createUseTreeView: PatternFactory<
 				case "ArrowRight": {
 					event.preventDefault();
 
-					const right = applyArrowRight(
-						items,
-						expandedItems(),
-						activeItem(),
-					);
+					const right = applyArrowRight(items, expandedItems(), activeItem());
 
 					setActiveItem(right.activeItem);
 					setExpandedItems(right.expandedItems);
@@ -155,25 +143,23 @@ export const createUseTreeView: PatternFactory<
 				}
 				case "ArrowUp": {
 					event.preventDefault();
-
-					setActiveItem(
-						navigatePrevious(items, expandedItems(), activeItem()),
-					);
+					setActiveItem(navigatePrevious(items, expandedItems(), activeItem()));
 
 					break;
 				}
 				case "End": {
 					event.preventDefault();
-
 					setActiveItem(navigateLast(items, expandedItems()));
 
 					break;
 				}
 				case "Home": {
 					event.preventDefault();
-
 					setActiveItem(navigateFirst(items, expandedItems()));
 
+					break;
+				}
+				default: {
 					break;
 				}
 			}
@@ -181,34 +167,35 @@ export const createUseTreeView: PatternFactory<
 
 		return {
 			expandedItems,
-			getGroupAttributes: (parentId: string) =>
-				computed(() => ({
-					"aria-labelledby": itemId(parentId),
-					"role": "group",
-				})),
-			getTreeAttributes: computed(() => ({
-				"aria-activedescendant": activeItem()
-					? itemId(activeItem())
-					: "",
-				"id": input.id,
-				"onKeyDown": handleKeyDown,
-				"role": "tree",
-				"tabIndex": 0,
-			})),
-			getTreeItemAttributes: (id: string) =>
-				computed(() => {
+			getGroupAttributes: (parentId: string) => {
+				return computed(() => {
+					return {
+						"aria-labelledby": itemId(parentId),
+						"role": "group",
+					};
+				});
+			},
+			getTreeAttributes: computed(() => {
+				return {
+					"id": input.id,
+					"aria-activedescendant": activeItem() ? itemId(activeItem()) : "",
+					"onKeyDown": handleKeyDown,
+					"role": "tree",
+					"tabIndex": 0,
+				};
+			}),
+			getTreeItemAttributes: (id: string) => {
+				return computed(() => {
 					const meta = findItemMeta(input.items, id);
 
 					return {
+						"id": itemId(id),
 						"aria-expanded":
-							(meta?.hasChildren ?? false)
-								? expandedItems().includes(id)
-								: undefined,
+							(meta?.hasChildren ?? false) ? expandedItems().includes(id) : undefined,
 						"aria-level": meta?.level ?? 1,
 						"aria-posinset": meta?.posinset ?? 1,
 						"aria-selected": id === selectedItem(),
 						"aria-setsize": meta?.setsize ?? 1,
-						"id": itemId(id),
 						// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the id closure for fine-grained reactivity
 						"onClick"() {
 							handleItemClick(id);
@@ -216,7 +203,8 @@ export const createUseTreeView: PatternFactory<
 						"role": "treeitem",
 						"tabIndex": -1,
 					};
-				}),
+				});
+			},
 			selectedItem,
 		};
 	};
@@ -242,33 +230,28 @@ type TypeaheadState = {
 const handleExpansionOrTypeaheadKey = (
 	event: KeyboardEvent,
 	context: KeyHandlerContext,
-): boolean =>
-	handleStarKey(event, context) || handleTypeaheadKey(event, context);
-
-const handleStarKey = (
-	event: KeyboardEvent,
-	context: KeyHandlerContext,
 ): boolean => {
-	if (event.key !== "*") return false;
+	return handleStarKey(event, context) || handleTypeaheadKey(event, context);
+};
+
+const handleStarKey = (event: KeyboardEvent, context: KeyHandlerContext): boolean => {
+	if (event.key !== "*") {
+		return false;
+	}
 
 	event.preventDefault();
 
 	context.setExpandedItems(
-		expandSiblings(
-			context.items,
-			context.expandedItems,
-			context.activeItem,
-		),
+		expandSiblings(context.items, context.expandedItems, context.activeItem),
 	);
 
 	return true;
 };
 
-const handleTypeaheadKey = (
-	event: KeyboardEvent,
-	context: KeyHandlerContext,
-): boolean => {
-	if (event.key.length !== 1 || event.ctrlKey || event.metaKey) return false;
+const handleTypeaheadKey = (event: KeyboardEvent, context: KeyHandlerContext): boolean => {
+	if (event.key.length !== 1 || event.ctrlKey || event.metaKey) {
+		return false;
+	}
 
 	event.preventDefault();
 
@@ -288,7 +271,9 @@ const handleTypeaheadKey = (
 		query,
 	);
 
-	if (match !== undefined) context.setActiveItem(match);
+	if (match !== undefined) {
+		context.setActiveItem(match);
+	}
 
 	return true;
 };
@@ -300,11 +285,7 @@ type ItemMeta = {
 	setsize: number;
 };
 
-const findItemMeta = (
-	items: TreeItem[],
-	id: string,
-	level = 1,
-): ItemMeta | undefined => {
+const findItemMeta = (items: TreeItem[], id: string, level = 1): ItemMeta | undefined => {
 	for (const [index, item] of items.entries()) {
 		if (item.id === id) {
 			return {
@@ -318,46 +299,47 @@ const findItemMeta = (
 		if (item.children !== undefined) {
 			const found = findItemMeta(item.children, id, level + 1);
 
-			if (found !== undefined) return found;
+			if (found !== undefined) {
+				return found;
+			}
 		}
 	}
 
 	return undefined;
 };
 
-const findSiblings = (
-	items: TreeItem[],
-	targetId: string,
-): TreeItem[] | undefined => {
+const findSiblings = (items: TreeItem[], targetId: string): TreeItem[] | undefined => {
 	for (const item of items) {
-		if (item.children?.some((child) => child.id === targetId)) {
+		if (
+			item.children?.some((child) => {
+				return child.id === targetId;
+			})
+		) {
 			return item.children;
 		}
 
 		if (item.children !== undefined) {
 			const found = findSiblings(item.children, targetId);
 
-			if (found !== undefined) return found;
+			if (found !== undefined) {
+				return found;
+			}
 		}
 	}
 
 	return undefined;
 };
 
-const expandSiblings = (
-	items: TreeItem[],
-	expandedItems: string[],
-	activeId: string,
-): string[] => {
+const expandSiblings = (items: TreeItem[], expandedItems: string[], activeId: string): string[] => {
 	const siblings = findSiblings(items, activeId) ?? items;
 
 	const missing = siblings
-		.filter(
-			(sibling) =>
-				(sibling.children?.length ?? 0) > 0 &&
-				!expandedItems.includes(sibling.id),
-		)
-		.map((sibling) => sibling.id);
+		.filter((sibling) => {
+			return (sibling.children?.length ?? 0) > 0 && !expandedItems.includes(sibling.id);
+		})
+		.map((sibling) => {
+			return sibling.id;
+		});
 
 	return [...expandedItems, ...missing];
 };
@@ -370,21 +352,14 @@ const matchTypeahead = (
 ): string | undefined => {
 	const lowerQuery = query.toLowerCase();
 	const start = visibleIds.indexOf(activeId);
+	const ordered = [...visibleIds.slice(start + 1), ...visibleIds.slice(0, start + 1)];
 
-	const ordered = [
-		...visibleIds.slice(start + 1),
-		...visibleIds.slice(0, start + 1),
-	];
-
-	return ordered.find((id) =>
-		findItemById(items, id)?.label.toLowerCase().startsWith(lowerQuery),
-	);
+	return ordered.find((id) => {
+		return findItemById(items, id)?.label.toLowerCase().startsWith(lowerQuery);
+	});
 };
 
-const getVisibleIds = (
-	items: TreeItem[],
-	expandedItems: string[],
-): string[] => {
+const getVisibleIds = (items: TreeItem[], expandedItems: string[]): string[] => {
 	const result: string[] = [];
 
 	for (const item of items) {
@@ -400,12 +375,16 @@ const getVisibleIds = (
 
 const findItemById = (items: TreeItem[], id: string): TreeItem | undefined => {
 	for (const item of items) {
-		if (item.id === id) return item;
+		if (item.id === id) {
+			return item;
+		}
 
 		if (item.children !== undefined) {
 			const found = findItemById(item.children, id);
 
-			if (found !== undefined) return found;
+			if (found !== undefined) {
+				return found;
+			}
 		}
 	}
 
@@ -418,27 +397,29 @@ const findParentId = (
 	parentId?: string,
 ): string | undefined => {
 	for (const item of items) {
-		if (item.id === targetId) return parentId;
+		if (item.id === targetId) {
+			return parentId;
+		}
 
 		if (item.children !== undefined) {
 			const found = findParentId(item.children, targetId, item.id);
 
-			if (found !== undefined) return found;
+			if (found !== undefined) {
+				return found;
+			}
 		}
 	}
 
 	return undefined;
 };
 
-const navigateNext = (
-	allItems: TreeItem[],
-	expandedItems: string[],
-	current: string,
-): string => {
+const navigateNext = (allItems: TreeItem[], expandedItems: string[], current: string): string => {
 	const visible = getVisibleIds(allItems, expandedItems);
 	const index = visible.indexOf(current);
 
-	if (index === -1 || index === visible.length - 1) return current;
+	if (index === -1 || index === visible.length - 1) {
+		return current;
+	}
 
 	return visible[index + 1] ?? current;
 };
@@ -451,16 +432,20 @@ const navigatePrevious = (
 	const visible = getVisibleIds(allItems, expandedItems);
 	const index = visible.indexOf(current);
 
-	if (index <= 0) return current;
+	if (index <= 0) {
+		return current;
+	}
 
 	return visible[index - 1] ?? current;
 };
 
-const navigateFirst = (allItems: TreeItem[], expandedItems: string[]): string =>
-	getVisibleIds(allItems, expandedItems).at(0) ?? "";
+const navigateFirst = (allItems: TreeItem[], expandedItems: string[]): string => {
+	return getVisibleIds(allItems, expandedItems).at(0) ?? "";
+};
 
-const navigateLast = (allItems: TreeItem[], expandedItems: string[]): string =>
-	getVisibleIds(allItems, expandedItems).at(-1) ?? "";
+const navigateLast = (allItems: TreeItem[], expandedItems: string[]): string => {
+	return getVisibleIds(allItems, expandedItems).at(-1) ?? "";
+};
 
 const applyArrowRight = (
 	allItems: TreeItem[],
@@ -469,7 +454,9 @@ const applyArrowRight = (
 ): { activeItem: string; expandedItems: string[] } => {
 	const item = findItemById(allItems, activeItem);
 
-	if (!item?.children?.length) return { activeItem, expandedItems };
+	if (!item?.children?.length) {
+		return { activeItem, expandedItems };
+	}
 
 	if (!expandedItems.includes(activeItem)) {
 		return { activeItem, expandedItems: [...expandedItems, activeItem] };
@@ -486,7 +473,9 @@ const applyArrowLeft = (
 	if (expandedItems.includes(activeItem)) {
 		return {
 			activeItem,
-			expandedItems: expandedItems.filter((id) => id !== activeItem),
+			expandedItems: expandedItems.filter((id) => {
+				return id !== activeItem;
+			}),
 		};
 	}
 

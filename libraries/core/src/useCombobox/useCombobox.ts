@@ -1,21 +1,16 @@
 import type { Event, FocusEvent, KeyboardEvent } from "../shared/Event";
+import { readInputValue } from "../shared/Event";
 import type { PatternFactory } from "../shared/Pattern";
 import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
 
-import { readInputValue } from "../shared/Event";
-
-/**
- * Combobox pattern input.
- */
+/** Combobox pattern input. */
 export type UseComboboxInput = {
 	id: string;
 	options: string[];
 };
 
-/**
- * Combobox pattern output.
- */
+/** Combobox pattern output. */
 export type UseComboboxOutput = {
 	filteredOptions: Reactive<string[]>;
 	getInputAttributes: Reactive<{
@@ -30,8 +25,8 @@ export type UseComboboxOutput = {
 		"value": string;
 	}>;
 	getOptionAttributes: (value: string) => Reactive<{
-		"aria-selected": boolean;
 		"id": string;
+		"aria-selected": boolean;
 		"onClick": () => void;
 		"role": "option";
 	}>;
@@ -41,13 +36,15 @@ export type UseComboboxOutput = {
 
 /**
  * Combobox pattern factory.
+ *
+ * @example
+ * 	const useCombobox = createUseCombobox({ computed, state });
+ *
  * @param frameworkAdapter - Helpers.
  * @param frameworkAdapter.computed - Computed state factory.
  * @param frameworkAdapter.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/combobox/
- * @example
- * 	const useCombobox = createUseCombobox({ computed, state });
  */
 export const createUseCombobox: PatternFactory<
 	UseComboboxInput,
@@ -59,11 +56,11 @@ export const createUseCombobox: PatternFactory<
 		const [isOpen, setIsOpen] = state(false);
 		const [selectedOption, setSelectedOption] = state("");
 
-		const filteredOptions = computed(() =>
-			input.options.filter((option) =>
-				option.toLowerCase().includes(inputValue().toLowerCase()),
-			),
-		);
+		const filteredOptions = computed(() => {
+			return input.options.filter((option) => {
+				return option.toLowerCase().includes(inputValue().toLowerCase());
+			});
+		});
 
 		const selectOption = (value: string) => {
 			setSelectedOption(value);
@@ -71,7 +68,9 @@ export const createUseCombobox: PatternFactory<
 			setIsOpen(false);
 		};
 
-		const optionId = (value: string) => `${input.id}-${value}`;
+		const optionId = (value: string) => {
+			return `${input.id}-${value}`;
+		};
 
 		const handleBlur = (event: FocusEvent) => {
 			if (isPopupTarget(event.relatedTarget, `${input.id}-`)) {
@@ -92,29 +91,36 @@ export const createUseCombobox: PatternFactory<
 			switch (event.key) {
 				case "ArrowDown": {
 					event.preventDefault();
-
 					setIsOpen(true);
 
 					break;
 				}
 				case "Enter": {
-					if (!isOpen()) break;
+					if (!isOpen()) {
+						break;
+					}
 
 					event.preventDefault();
 
 					const first = filteredOptions().at(0);
 
-					if (first !== undefined) selectOption(first);
+					if (first !== undefined) {
+						selectOption(first);
+					}
 
 					break;
 				}
 				case "Escape": {
-					if (!isOpen()) break;
+					if (!isOpen()) {
+						break;
+					}
 
 					event.preventDefault();
-
 					setIsOpen(false);
 
+					break;
+				}
+				default: {
 					break;
 				}
 			}
@@ -122,37 +128,39 @@ export const createUseCombobox: PatternFactory<
 
 		return {
 			filteredOptions,
-			getInputAttributes: computed(() => ({
-				"aria-autocomplete": "list",
-				"aria-controls": input.id,
-				"aria-expanded": isOpen(),
-				"onBlur": handleBlur,
-				"onChange": handleInput,
-				"onInput": handleInput,
-				"onKeyDown": handleKeyDown,
-				"role": "combobox",
-				"value": inputValue(),
-			})),
-			getOptionAttributes: (value: string) =>
-				computed(() => ({
-					"aria-selected": value === selectedOption(),
-					"id": optionId(value),
-					// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the value closure for fine-grained reactivity
-					"onClick"() {
-						selectOption(value);
-					},
-					"role": "option",
-				})),
+			getInputAttributes: computed(() => {
+				return {
+					"aria-autocomplete": "list",
+					"aria-controls": input.id,
+					"aria-expanded": isOpen(),
+					"onBlur": handleBlur,
+					"onChange": handleInput,
+					"onInput": handleInput,
+					"onKeyDown": handleKeyDown,
+					"role": "combobox",
+					"value": inputValue(),
+				};
+			}),
+			getOptionAttributes: (value: string) => {
+				return computed(() => {
+					return {
+						"id": optionId(value),
+						"aria-selected": value === selectedOption(),
+						// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the value closure for fine-grained reactivity
+						"onClick"() {
+							selectOption(value);
+						},
+						"role": "option",
+					};
+				});
+			},
 			isOpen,
 			selectedOption,
 		};
 	};
 };
 
-const isPopupTarget = (
-	relatedTarget: EventTarget | null,
-	prefix: string,
-): boolean => {
+const isPopupTarget = (relatedTarget: EventTarget | null, prefix: string): boolean => {
 	if (typeof relatedTarget !== "object" || relatedTarget === null) {
 		return false;
 	}

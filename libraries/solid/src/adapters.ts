@@ -1,17 +1,19 @@
 import type { FrameworkPort } from "@hexagonal-ui/core";
-
-import {
-	createEffect,
-	createMemo,
-	createSignal,
-	onCleanup,
-	onMount,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 
 export const frameworkAdapter: FrameworkPort = {
-	computed: createMemo,
-	effect: createEffect,
-	lifecycle: { onDestroy: onCleanup, onMount },
 	ref: createSignal,
+	computed: createMemo,
+	effect: (effect) => {
+		createEffect(() => {
+			effect();
+		});
+	},
+	lifecycle: {
+		onDestroy: (callback) => {
+			onCleanup(callback);
+		},
+		onMount,
+	},
 	state: createSignal,
 };

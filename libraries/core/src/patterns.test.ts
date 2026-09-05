@@ -1,5 +1,4 @@
 import { describe, expect, test } from "vitest";
-
 import {
 	createMockPorts,
 	mockEvent,
@@ -35,9 +34,7 @@ describe("useButton", () => {
 		expect(attributes["aria-disabled"]).toBe(false);
 		expect(attributes["aria-label"]).toBe("Click me");
 		expect(attributes.type).toBe("submit");
-
 		attributes.onClick(mockEvent());
-
 		expect(pressed).toBe(1);
 	});
 
@@ -82,17 +79,11 @@ describe("useDisclosure", () => {
 
 		expect(disclosure.isOpen()).toBe(false);
 		expect(disclosure.getTriggerAttributes().id).toBe("panel-trigger");
-		expect(disclosure.getTriggerAttributes()["aria-controls"]).toBe(
-			"panel",
-		);
-
+		expect(disclosure.getTriggerAttributes()["aria-controls"]).toBe("panel");
 		disclosure.getTriggerAttributes().onClick();
-
 		expect(disclosure.isOpen()).toBe(true);
 		expect(disclosure.getTriggerAttributes()["aria-expanded"]).toBe(true);
-
 		disclosure.getTriggerAttributes().onClick();
-
 		expect(disclosure.isOpen()).toBe(false);
 	});
 });
@@ -107,24 +98,17 @@ describe("useCombobox", () => {
 		});
 
 		combobox.getInputAttributes().onInput(mockInputEvent("ap"));
-
 		expect(combobox.getInputAttributes().value).toBe("ap");
 		expect(combobox.isOpen()).toBe(true);
 		expect(combobox.filteredOptions()).toStrictEqual(["Apple"]);
-
 		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("Enter"));
-
 		expect(combobox.selectedOption()).toBe("Apple");
 		expect(combobox.getInputAttributes().value).toBe("Apple");
 		expect(combobox.isOpen()).toBe(false);
-
 		combobox.getOptionAttributes("Banana")().onClick();
-
 		expect(combobox.selectedOption()).toBe("Banana");
 		expect(combobox.getInputAttributes().value).toBe("Banana");
-		expect(combobox.getOptionAttributes("Banana")().id).toBe(
-			"listbox-Banana",
-		);
+		expect(combobox.getOptionAttributes("Banana")().id).toBe("listbox-Banana");
 	});
 
 	test("should keep popup open when focus moves to an option", () => {
@@ -136,7 +120,6 @@ describe("useCombobox", () => {
 		});
 
 		combobox.getInputAttributes().onInput(mockInputEvent("a"));
-
 		expect(combobox.isOpen()).toBe(true);
 
 		combobox.getInputAttributes().onBlur(
@@ -146,9 +129,7 @@ describe("useCombobox", () => {
 		);
 
 		expect(combobox.isOpen()).toBe(true);
-
 		combobox.getInputAttributes().onBlur(mockFocusEvent());
-
 		expect(combobox.isOpen()).toBe(false);
 	});
 });
@@ -162,26 +143,15 @@ describe("useListbox", () => {
 			options: ["A", "B", "C"],
 		});
 
-		listbox
-			.getListboxAttributes()
-			.onKeyDown(mockKeyboardEvent("ArrowDown"));
-
+		listbox.getListboxAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
 		expect(listbox.activeOption()).toBe("A");
 		expect(listbox.selectedOption()).toBe("");
-
-		listbox
-			.getListboxAttributes()
-			.onKeyDown(mockKeyboardEvent("ArrowDown"));
-
+		listbox.getListboxAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
 		expect(listbox.activeOption()).toBe("B");
-
 		listbox.getListboxAttributes().onKeyDown(mockKeyboardEvent("Enter"));
-
 		expect(listbox.selectedOption()).toBe("B");
 		expect(listbox.getOptionAttributes("B")()["aria-selected"]).toBe(true);
-
 		listbox.getOptionAttributes("C")().onClick();
-
 		expect(listbox.selectedOption()).toBe("C");
 		expect(listbox.activeOption()).toBe("C");
 	});
@@ -204,6 +174,7 @@ describe("useMenu", () => {
 				focused = "trigger";
 			},
 		});
+
 		menu.menuRef({
 			focus: () => {
 				focused = "menu";
@@ -211,25 +182,15 @@ describe("useMenu", () => {
 		});
 
 		menu.getTriggerAttributes().onClick();
-
 		expect(menu.isOpen()).toBe(true);
-
 		runEffects();
-
 		expect(focused).toBe("menu");
-
 		menu.getMenuAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
-
 		expect(menu.activeItem()).toBe("Cut");
-
 		menu.getMenuAttributes().onKeyDown(mockKeyboardEvent("Escape"));
-
 		expect(menu.isOpen()).toBe(false);
-
 		runEffects();
-
 		expect(focused).toBe("trigger");
-
 		expect(menu.getMenuItemAttributes("Copy")().role).toBe("menuitem");
 	});
 
@@ -258,11 +219,7 @@ describe("useMenubar", () => {
 		expect(menubar.activeItem()).toBe("File");
 		expect(menubar.getMenuItemAttributes("File")().tabIndex).toBe(0);
 		expect(menubar.getMenuItemAttributes("Edit")().tabIndex).toBe(-1);
-
-		menubar
-			.getMenuItemAttributes("File")()
-			.onKeyDown(mockKeyboardEvent("ArrowRight"));
-
+		menubar.getMenuItemAttributes("File")().onKeyDown(mockKeyboardEvent("ArrowRight"));
 		expect(menubar.activeItem()).toBe("Edit");
 		expect(menubar.getMenuItemAttributes("Edit")().tabIndex).toBe(0);
 	});
@@ -279,27 +236,17 @@ describe("useSelect", () => {
 		});
 
 		expect(select.isOpen()).toBe(false);
-
 		select.getTriggerAttributes().onClick();
-
 		expect(select.isOpen()).toBe(true);
 		expect(select.activeOption()).toBe("Apple");
 		expect(select.getTriggerAttributes()["aria-expanded"]).toBe(true);
-
 		select.getListboxAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
-
 		expect(select.activeOption()).toBe("Banana");
-
 		select.getListboxAttributes().onKeyDown(mockKeyboardEvent("Enter"));
-
 		expect(select.selectedOption()).toBe("Banana");
 		expect(select.isOpen()).toBe(false);
-		expect(select.getOptionAttributes("Banana")()["aria-selected"]).toBe(
-			true,
-		);
-
+		expect(select.getOptionAttributes("Banana")()["aria-selected"]).toBe(true);
 		select.getTriggerAttributes().onKeyDown(mockKeyboardEvent("Escape"));
-
 		expect(select.isOpen()).toBe(false);
 	});
 
@@ -335,7 +282,6 @@ describe("useTreeView", () => {
 		});
 
 		tree.getTreeItemAttributes("branch")().onClick();
-
 		expect(tree.expandedItems()).toContain("branch");
 		expect(tree.selectedItem()).toBe("branch");
 
@@ -350,13 +296,8 @@ describe("useTreeView", () => {
 		expect(leafAttributes["aria-level"]).toBe(2);
 		expect(leafAttributes["aria-setsize"]).toBe(2);
 		expect(leafAttributes["aria-posinset"]).toBe(1);
-
 		tree.getTreeAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
-
-		expect(tree.getTreeAttributes()["aria-activedescendant"]).toContain(
-			"leaf",
-		);
-
+		expect(tree.getTreeAttributes()["aria-activedescendant"]).toContain("leaf");
 		expect(tree.getGroupAttributes("branch")().role).toBe("group");
 	});
 
@@ -380,13 +321,8 @@ describe("useTreeView", () => {
 		});
 
 		tree.getTreeAttributes().onKeyDown(mockKeyboardEvent("*"));
-
 		expect(tree.expandedItems()).toStrictEqual(["branch-a", "branch-b"]);
-
 		tree.getTreeAttributes().onKeyDown(mockKeyboardEvent("b"));
-
-		expect(tree.getTreeAttributes()["aria-activedescendant"]).toContain(
-			"branch-b",
-		);
+		expect(tree.getTreeAttributes()["aria-activedescendant"]).toContain("branch-b");
 	});
 });

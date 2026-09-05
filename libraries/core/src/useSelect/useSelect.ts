@@ -1,13 +1,12 @@
 import type { KeyboardEvent } from "../shared/Event";
+import { navigateNext, navigatePrevious } from "../shared/navigation";
 import type { PatternFactory } from "../shared/Pattern";
 import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
 
-import { navigateNext, navigatePrevious } from "../shared/navigation";
-
 /**
- * Select pattern input. `id` is the listbox id; the trigger id defaults to
- * `${id}-trigger` when omitted.
+ * Select pattern input. `id` is the listbox id; the trigger id defaults to `${id}-trigger` when
+ * omitted.
  */
 export type UseSelectInput = {
 	id: string;
@@ -15,29 +14,27 @@ export type UseSelectInput = {
 	triggerId?: string;
 };
 
-/**
- * Select pattern output.
- */
+/** Select pattern output. */
 export type UseSelectOutput = {
 	activeOption: Reactive<string>;
 	getListboxAttributes: Reactive<{
-		"aria-activedescendant": string;
 		"id": string;
+		"aria-activedescendant": string;
 		"onKeyDown": (event: KeyboardEvent) => void;
 		"role": "listbox";
 		"tabIndex": -1;
 	}>;
 	getOptionAttributes: (value: string) => Reactive<{
-		"aria-selected": boolean;
 		"id": string;
+		"aria-selected": boolean;
 		"onClick": () => void;
 		"role": "option";
 	}>;
 	getTriggerAttributes: Reactive<{
+		"id": string;
 		"aria-controls": string;
 		"aria-expanded": boolean;
 		"aria-haspopup": "listbox";
-		"id": string;
 		"onClick": () => void;
 		"onKeyDown": (event: KeyboardEvent) => void;
 		"role": "button";
@@ -47,15 +44,17 @@ export type UseSelectOutput = {
 };
 
 /**
- * Select pattern factory. Composes a button-like trigger with a listbox
- * popup, reusing the shared list navigation helpers.
+ * Select pattern factory. Composes a button-like trigger with a listbox popup, reusing the shared
+ * list navigation helpers.
+ *
+ * @example
+ * 	const useSelect = createUseSelect({ computed, state });
+ *
  * @param frameworkAdapter - Helpers.
  * @param frameworkAdapter.computed - Computed state factory.
  * @param frameworkAdapter.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ (select-only)
- * @example
- * 	const useSelect = createUseSelect({ computed, state });
  */
 export const createUseSelect: PatternFactory<
 	UseSelectInput,
@@ -66,7 +65,11 @@ export const createUseSelect: PatternFactory<
 		const [isOpen, setIsOpen] = state(false);
 		const [activeOption, setActiveOption] = state("");
 		const [selectedOption, setSelectedOption] = state("");
-		const optionId = (value: string) => `${input.id}-${value}`;
+
+		const optionId = (value: string) => {
+			return `${input.id}-${value}`;
+		};
+
 		const triggerId = input.triggerId ?? `${input.id}-trigger`;
 
 		const open = (value: string) => {
@@ -84,7 +87,9 @@ export const createUseSelect: PatternFactory<
 		};
 
 		const commitSelection = (value: string) => {
-			if (value === "") return;
+			if (value === "") {
+				return;
+			}
 
 			setSelectedOption(value);
 			close();
@@ -111,9 +116,7 @@ export const createUseSelect: PatternFactory<
 					event.preventDefault();
 
 					if (isOpen()) {
-						setActiveOption(
-							navigatePrevious(options, activeOption()),
-						);
+						setActiveOption(navigatePrevious(options, activeOption()));
 					} else {
 						openAtSelected(options.at(-1));
 					}
@@ -122,9 +125,11 @@ export const createUseSelect: PatternFactory<
 				}
 				case "Escape": {
 					event.preventDefault();
-
 					close();
 
+					break;
+				}
+				default: {
 					break;
 				}
 			}
@@ -137,21 +142,18 @@ export const createUseSelect: PatternFactory<
 				case " ":
 				case "Enter": {
 					event.preventDefault();
-
 					commitSelection(activeOption());
 
 					break;
 				}
 				case "ArrowDown": {
 					event.preventDefault();
-
 					setActiveOption(navigateNext(options, activeOption()));
 
 					break;
 				}
 				case "ArrowUp": {
 					event.preventDefault();
-
 					setActiveOption(navigatePrevious(options, activeOption()));
 
 					break;
@@ -161,13 +163,14 @@ export const createUseSelect: PatternFactory<
 
 					const last = options.at(-1);
 
-					if (last !== undefined) setActiveOption(last);
+					if (last !== undefined) {
+						setActiveOption(last);
+					}
 
 					break;
 				}
 				case "Escape": {
 					event.preventDefault();
-
 					close();
 
 					break;
@@ -177,8 +180,13 @@ export const createUseSelect: PatternFactory<
 
 					const first = options.at(0);
 
-					if (first !== undefined) setActiveOption(first);
+					if (first !== undefined) {
+						setActiveOption(first);
+					}
 
+					break;
+				}
+				default: {
 					break;
 				}
 			}
@@ -186,40 +194,45 @@ export const createUseSelect: PatternFactory<
 
 		return {
 			activeOption,
-			getListboxAttributes: computed(() => ({
-				"aria-activedescendant": activeOption()
-					? optionId(activeOption())
-					: "",
-				"id": input.id,
-				"onKeyDown": handleListboxKeyDown,
-				"role": "listbox",
-				"tabIndex": -1,
-			})),
-			getOptionAttributes: (value: string) =>
-				computed(() => ({
-					"aria-selected": value === selectedOption(),
-					"id": optionId(value),
-					// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the value closure for fine-grained reactivity
+			getListboxAttributes: computed(() => {
+				return {
+					"id": input.id,
+					"aria-activedescendant": activeOption() ? optionId(activeOption()) : "",
+					"onKeyDown": handleListboxKeyDown,
+					"role": "listbox",
+					"tabIndex": -1,
+				};
+			}),
+			getOptionAttributes: (value: string) => {
+				return computed(() => {
+					return {
+						"id": optionId(value),
+						"aria-selected": value === selectedOption(),
+						// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the value closure for fine-grained reactivity
+						"onClick"() {
+							commitSelection(value);
+						},
+						"role": "option",
+					};
+				});
+			},
+			getTriggerAttributes: computed(() => {
+				return {
+					"id": triggerId,
+					"aria-controls": input.id,
+					"aria-expanded": isOpen(),
+					"aria-haspopup": "listbox",
 					"onClick"() {
-						commitSelection(value);
+						if (isOpen()) {
+							close();
+						} else {
+							openAtSelected(input.options.at(0));
+						}
 					},
-					"role": "option",
-				})),
-			getTriggerAttributes: computed(() => ({
-				"aria-controls": input.id,
-				"aria-expanded": isOpen(),
-				"aria-haspopup": "listbox",
-				"id": triggerId,
-				"onClick"() {
-					if (isOpen()) {
-						close();
-					} else {
-						openAtSelected(input.options.at(0));
-					}
-				},
-				"onKeyDown": handleTriggerKeyDown,
-				"role": "button",
-			})),
+					"onKeyDown": handleTriggerKeyDown,
+					"role": "button",
+				};
+			}),
 			isOpen,
 			selectedOption,
 		};

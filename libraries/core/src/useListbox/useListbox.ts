@@ -1,33 +1,28 @@
 import type { KeyboardEvent } from "../shared/Event";
+import { navigateNext, navigatePrevious } from "../shared/navigation";
 import type { PatternFactory } from "../shared/Pattern";
 import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
 
-import { navigateNext, navigatePrevious } from "../shared/navigation";
-
-/**
- * Listbox pattern input.
- */
+/** Listbox pattern input. */
 export type UseListboxInput = {
 	id: string;
 	options: string[];
 };
 
-/**
- * Listbox pattern output.
- */
+/** Listbox pattern output. */
 export type UseListboxOutput = {
 	activeOption: Reactive<string>;
 	getListboxAttributes: Reactive<{
-		"aria-activedescendant": string;
 		"id": string;
+		"aria-activedescendant": string;
 		"onKeyDown": (event: KeyboardEvent) => void;
 		"role": "listbox";
 		"tabIndex": 0;
 	}>;
 	getOptionAttributes: (value: string) => Reactive<{
-		"aria-selected": boolean;
 		"id": string;
+		"aria-selected": boolean;
 		"onClick": () => void;
 		"role": "option";
 	}>;
@@ -36,13 +31,15 @@ export type UseListboxOutput = {
 
 /**
  * Listbox pattern factory.
+ *
+ * @example
+ * 	const useListbox = createUseListbox({ computed, state });
+ *
  * @param frameworkAdapter - Helpers.
  * @param frameworkAdapter.computed - Computed state factory.
  * @param frameworkAdapter.state - State manager.
  * @returns Hook.
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/listbox/
- * @example
- * 	const useListbox = createUseListbox({ computed, state });
  */
 export const createUseListbox: PatternFactory<
 	UseListboxInput,
@@ -52,10 +49,15 @@ export const createUseListbox: PatternFactory<
 	return (input) => {
 		const [activeOption, setActiveOption] = state("");
 		const [selectedOption, setSelectedOption] = state("");
-		const optionId = (value: string) => `${input.id}-${value}`;
+
+		const optionId = (value: string) => {
+			return `${input.id}-${value}`;
+		};
 
 		const commitSelection = (value: string) => {
-			if (value === "") return;
+			if (value === "") {
+				return;
+			}
 
 			setActiveOption(value);
 			setSelectedOption(value);
@@ -77,14 +79,12 @@ export const createUseListbox: PatternFactory<
 				}
 				case "ArrowDown": {
 					event.preventDefault();
-
 					setActiveOption(navigateNext(options, activeOption()));
 
 					break;
 				}
 				case "ArrowUp": {
 					event.preventDefault();
-
 					setActiveOption(navigatePrevious(options, activeOption()));
 
 					break;
@@ -94,7 +94,9 @@ export const createUseListbox: PatternFactory<
 
 					const last = options.at(-1);
 
-					if (last !== undefined) setActiveOption(last);
+					if (last !== undefined) {
+						setActiveOption(last);
+					}
 
 					break;
 				}
@@ -103,8 +105,13 @@ export const createUseListbox: PatternFactory<
 
 					const first = options.at(0);
 
-					if (first !== undefined) setActiveOption(first);
+					if (first !== undefined) {
+						setActiveOption(first);
+					}
 
+					break;
+				}
+				default: {
 					break;
 				}
 			}
@@ -112,25 +119,28 @@ export const createUseListbox: PatternFactory<
 
 		return {
 			activeOption,
-			getListboxAttributes: computed(() => ({
-				"aria-activedescendant": activeOption()
-					? optionId(activeOption())
-					: "",
-				"id": input.id,
-				"onKeyDown": handleKeyDown,
-				"role": "listbox",
-				"tabIndex": 0,
-			})),
-			getOptionAttributes: (value: string) =>
-				computed(() => ({
-					"aria-selected": value === selectedOption(),
-					"id": optionId(value),
-					// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the value closure for fine-grained reactivity
-					"onClick"() {
-						commitSelection(value);
-					},
-					"role": "option",
-				})),
+			getListboxAttributes: computed(() => {
+				return {
+					"id": input.id,
+					"aria-activedescendant": activeOption() ? optionId(activeOption()) : "",
+					"onKeyDown": handleKeyDown,
+					"role": "listbox",
+					"tabIndex": 0,
+				};
+			}),
+			getOptionAttributes: (value: string) => {
+				return computed(() => {
+					return {
+						"id": optionId(value),
+						"aria-selected": value === selectedOption(),
+						// eslint-disable-next-line sonarjs/no-nested-functions -- per-item computed needs the value closure for fine-grained reactivity
+						"onClick"() {
+							commitSelection(value);
+						},
+						"role": "option",
+					};
+				});
+			},
 			selectedOption,
 		};
 	};

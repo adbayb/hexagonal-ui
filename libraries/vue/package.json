@@ -4,15 +4,18 @@
 	"description": "Hexagonal UI Vue adapter",
 	"homepage": "https://github.com/adbayb/hexagonal-ui#readme",
 	"bugs": "https://github.com/adbayb/hexagonal-ui/issues",
+	"license": "MIT",
+	"author": "Ayoub Adib <adbayb@gmail.com> (https://twitter.com/adbayb)",
 	"repository": {
 		"type": "git",
 		"url": "git@github.com:adbayb/hexagonal-ui.git",
 		"directory": "libraries/vue"
 	},
-	"license": "MIT",
-	"author": "Ayoub Adib <adbayb@gmail.com> (https://twitter.com/adbayb)",
-	"sideEffects": false,
+	"files": [
+		"dist"
+	],
 	"type": "module",
+	"sideEffects": false,
 	"exports": {
 		".": {
 			"source": "./src/index.ts",
@@ -22,9 +25,9 @@
 			"default": "./dist/index.mjs"
 		}
 	},
-	"files": [
-		"dist"
-	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"build": "quickbundle build",
 		"start": "pnpm watch",
@@ -35,14 +38,11 @@
 		"@hexagonal-ui/core": "workspace:^"
 	},
 	"devDependencies": {
-		"quickbundle": "3.0.0",
-		"vitest": "4.1.7",
-		"vue": "3.5.35"
+		"quickbundle": "3.2.0",
+		"vitest": "5.0.0",
+		"vue": "3.5.42"
 	},
 	"peerDependencies": {
 		"vue": "^3.0.0"
-	},
-	"publishConfig": {
-		"access": "public"
 	}
 }

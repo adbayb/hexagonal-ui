@@ -18,11 +18,10 @@ export type UseSelectInput = {
 export type UseSelectOutput = {
 	activeOption: Reactive<string>;
 	getListboxAttributes: Reactive<{
-		"id": string;
-		"aria-activedescendant": string;
-		"onKeyDown": (event: KeyboardEvent) => void;
-		"role": "listbox";
-		"tabIndex": -1;
+		id: string;
+		onKeyDown: (event: KeyboardEvent) => void;
+		role: "listbox";
+		tabIndex: -1;
 	}>;
 	getOptionAttributes: (value: string) => Reactive<{
 		"id": string;
@@ -32,6 +31,7 @@ export type UseSelectOutput = {
 	}>;
 	getTriggerAttributes: Reactive<{
 		"id": string;
+		"aria-activedescendant": string;
 		"aria-controls": string;
 		"aria-expanded": boolean;
 		"aria-haspopup": "listbox";
@@ -100,12 +100,22 @@ export const createUseSelect: PatternFactory<
 
 			switch (event.key) {
 				case " ":
-				case "ArrowDown":
 				case "Enter": {
 					event.preventDefault();
 
 					if (isOpen()) {
 						commitSelection(activeOption());
+					} else {
+						openAtSelected(options.at(0));
+					}
+
+					break;
+				}
+				case "ArrowDown": {
+					event.preventDefault();
+
+					if (isOpen()) {
+						setActiveOption(navigateNext(options, activeOption()));
 					} else {
 						openAtSelected(options.at(0));
 					}
@@ -196,11 +206,10 @@ export const createUseSelect: PatternFactory<
 			activeOption,
 			getListboxAttributes: computed(() => {
 				return {
-					"id": input.id,
-					"aria-activedescendant": activeOption() ? optionId(activeOption()) : "",
-					"onKeyDown": handleListboxKeyDown,
-					"role": "listbox",
-					"tabIndex": -1,
+					id: input.id,
+					onKeyDown: handleListboxKeyDown,
+					role: "listbox",
+					tabIndex: -1,
 				};
 			}),
 			getOptionAttributes: (value: string) => {
@@ -219,6 +228,7 @@ export const createUseSelect: PatternFactory<
 			getTriggerAttributes: computed(() => {
 				return {
 					"id": triggerId,
+					"aria-activedescendant": activeOption() ? optionId(activeOption()) : "",
 					"aria-controls": input.id,
 					"aria-expanded": isOpen(),
 					"aria-haspopup": "listbox",

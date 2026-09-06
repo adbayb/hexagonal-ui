@@ -83,7 +83,11 @@ export const createUseMenu: PatternFactory<
 			setActiveItem("");
 		};
 
-		// Move focus into the menu on open, back to the trigger on close.
+		/*
+		 * Move focus into the menu on open, back to the trigger on close. When opening, the
+		 * menu node may not be attached yet (async ref storage); skip the state update so a
+		 * later run retries instead of dropping focus silently.
+		 */
 		effect(() => {
 			const openNow = isOpen();
 
@@ -91,11 +95,17 @@ export const createUseMenu: PatternFactory<
 				return;
 			}
 
-			setWasOpen(openNow);
-
 			if (openNow) {
-				menuNode()?.focus();
+				const node = menuNode();
+
+				if (!node) {
+					return;
+				}
+
+				setWasOpen(true);
+				node.focus();
 			} else {
+				setWasOpen(false);
 				triggerNode()?.focus();
 			}
 		});

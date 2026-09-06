@@ -61,11 +61,17 @@ const Disclosure = () => {
 };
 
 const Combobox = () => {
-	const { filteredOptions, getInputAttributes, getOptionAttributes, isOpen, selectedOption } =
-		useCombobox({
-			id: "solid-listbox",
-			options: FRUITS,
-		});
+	const {
+		activeOption,
+		filteredOptions,
+		getInputAttributes,
+		getOptionAttributes,
+		isOpen,
+		selectedOption,
+	} = useCombobox({
+		id: "solid-listbox",
+		options: FRUITS,
+	});
 
 	return (
 		<div>
@@ -76,11 +82,20 @@ const Combobox = () => {
 					role="listbox"
 				>
 					{filteredOptions().map((option) => {
+						const attributes = getOptionAttributes(option)();
+
 						return (
 							// eslint-disable-next-line @eslint-react/no-missing-key
 							<li
-								{...getOptionAttributes(option)()}
+								{...attributes}
 								onMouseDown={keepFocusOnMouseDown}
+								style={{
+									"background":
+										activeOption() === option ? "#e0f2fe" : "transparent",
+									"cursor": "pointer",
+									"font-weight": attributes["aria-selected"] ? "bold" : "normal",
+									"padding": "0.25rem 1rem",
+								}}
 							>
 								{option}
 							</li>
@@ -94,7 +109,7 @@ const Combobox = () => {
 };
 
 const Listbox = () => {
-	const { getListboxAttributes, getOptionAttributes } = useListbox({
+	const { activeOption, getListboxAttributes, getOptionAttributes } = useListbox({
 		id: "solid-listbox-widget",
 		options: FRUITS,
 	});
@@ -107,16 +122,19 @@ const Listbox = () => {
 			>
 				{FRUITS.map((option) => {
 					const attributes = getOptionAttributes(option)();
+					const isActive = activeOption() === option;
 
 					return (
 						// eslint-disable-next-line @eslint-react/no-missing-key
 						<li
 							{...attributes}
+							onMouseDown={keepFocusOnMouseDown}
 							style={{
 								"align-items": "center",
-								"background": attributes["aria-selected"]
-									? "#e0f2fe"
-									: "transparent",
+								"background":
+									isActive || attributes["aria-selected"]
+										? "#e0f2fe"
+										: "transparent",
 								"cursor": "pointer",
 								"display": "flex",
 								"font-weight": attributes["aria-selected"] ? "bold" : "normal",
@@ -145,6 +163,7 @@ const NAV_ITEMS = ["File", "Edit", "View", "Help"];
 
 const Menu = () => {
 	const {
+		activeItem,
 		getMenuAttributes,
 		getMenuItemAttributes,
 		getTriggerAttributes,
@@ -185,6 +204,7 @@ const Menu = () => {
 							<li
 								{...getMenuItemAttributes(action)()}
 								style={{
+									background: activeItem() === action ? "#e0f2fe" : "transparent",
 									cursor: "pointer",
 									padding: "0.25rem 1rem",
 								}}
@@ -241,6 +261,7 @@ const Menubar = () => {
 
 const Select = () => {
 	const {
+		activeOption,
 		getListboxAttributes,
 		getOptionAttributes,
 		getTriggerAttributes,
@@ -273,13 +294,19 @@ const Select = () => {
 					}}
 				>
 					{FRUITS.map((option) => {
+						const attributes = getOptionAttributes(option)();
+
 						return (
 							// eslint-disable-next-line @eslint-react/no-missing-key
 							<li
-								{...getOptionAttributes(option)()}
+								{...attributes}
+								onMouseDown={keepFocusOnMouseDown}
 								style={{
-									cursor: "pointer",
-									padding: "0.25rem 1rem",
+									"background":
+										activeOption() === option ? "#e0f2fe" : "transparent",
+									"cursor": "pointer",
+									"font-weight": attributes["aria-selected"] ? "bold" : "normal",
+									"padding": "0.25rem 1rem",
 								}}
 							>
 								{option}
@@ -328,20 +355,30 @@ const getItemPrefix = (hasChildren: boolean, isExpanded: boolean): string => {
 };
 
 const TreeView = () => {
-	const { expandedItems, getGroupAttributes, getTreeAttributes, getTreeItemAttributes } =
-		useTreeView({ id: "solid-tree", items: TREE_ITEMS });
+	const {
+		activeItem,
+		expandedItems,
+		getGroupAttributes,
+		getTreeAttributes,
+		getTreeItemAttributes,
+	} = useTreeView({ id: "solid-tree", items: TREE_ITEMS });
 
 	const renderItems = (items: UseTreeViewInput["items"]): JSX.Element => {
 		return items.map((item) => {
+			const attributes = getTreeItemAttributes(item.id)();
+
 			return (
 				// eslint-disable-next-line @eslint-react/no-missing-key
 				<li>
 					<span
-						{...getTreeItemAttributes(item.id)()}
+						{...attributes}
+						onMouseDown={keepFocusOnMouseDown}
 						style={{
-							cursor: "pointer",
-							display: "block",
-							padding: "0.125rem 0.25rem",
+							"background": activeItem() === item.id ? "#e0f2fe" : "transparent",
+							"cursor": "pointer",
+							"display": "block",
+							"font-weight": attributes["aria-selected"] ? "bold" : "normal",
+							"padding": "0.125rem 0.25rem",
 						}}
 					>
 						{getItemPrefix(

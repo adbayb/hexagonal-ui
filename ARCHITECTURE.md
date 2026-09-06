@@ -126,8 +126,10 @@ isOpen: Reactive<boolean>;
 **Output:**
 
 ```ts
+activeOption: Reactive<string>
 filteredOptions: Reactive<string[]>
 getInputAttributes: Reactive<{
+  "aria-activedescendant": string;
   "aria-autocomplete": "list"; "aria-controls": string;
   "aria-expanded": boolean;
   "onBlur" | "onChange" | "onInput": (event: Event) => void;
@@ -240,6 +242,7 @@ getMenuItemAttributes: (item: string) => {
 **Output:**
 
 ```ts
+activeItem: Reactive<string>
 expandedItems: Reactive<string[]>
 getGroupAttributes: (parentId: string) => {
   "aria-labelledby": string; "role": "group";

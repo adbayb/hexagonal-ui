@@ -101,14 +101,43 @@ describe("useCombobox", () => {
 		expect(combobox.getInputAttributes().value).toBe("ap");
 		expect(combobox.isOpen()).toBe(true);
 		expect(combobox.filteredOptions()).toStrictEqual(["Apple"]);
+		expect(combobox.activeOption()).toBe("Apple");
+		expect(combobox.getInputAttributes()["aria-activedescendant"]).toBe("listbox-Apple");
 		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("Enter"));
 		expect(combobox.selectedOption()).toBe("Apple");
 		expect(combobox.getInputAttributes().value).toBe("Apple");
 		expect(combobox.isOpen()).toBe(false);
+		expect(combobox.activeOption()).toBe("");
 		combobox.getOptionAttributes("Banana")().onClick();
 		expect(combobox.selectedOption()).toBe("Banana");
 		expect(combobox.getInputAttributes().value).toBe("Banana");
 		expect(combobox.getOptionAttributes("Banana")().id).toBe("listbox-Banana");
+	});
+
+	test("should navigate options with arrow keys and clear active on escape", () => {
+		const { ports } = createMockPorts();
+
+		const combobox = createUseCombobox(ports)({
+			id: "listbox",
+			options: ["Apple", "Banana", "Cherry"],
+		});
+
+		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
+		expect(combobox.isOpen()).toBe(true);
+		expect(combobox.activeOption()).toBe("Apple");
+		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
+		expect(combobox.activeOption()).toBe("Banana");
+		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("ArrowUp"));
+		expect(combobox.activeOption()).toBe("Apple");
+		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("Enter"));
+		expect(combobox.selectedOption()).toBe("Apple");
+		expect(combobox.isOpen()).toBe(false);
+		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
+		expect(combobox.isOpen()).toBe(true);
+		combobox.getInputAttributes().onKeyDown(mockKeyboardEvent("Escape"));
+		expect(combobox.isOpen()).toBe(false);
+		expect(combobox.activeOption()).toBe("");
+		expect(combobox.getInputAttributes()["aria-activedescendant"]).toBe("");
 	});
 
 	test("should keep popup open when focus moves to an option", () => {
@@ -205,6 +234,38 @@ describe("useMenu", () => {
 		expect(menu.getTriggerAttributes().id).toBe("menu-trigger");
 		expect(menu.getTriggerAttributes()["aria-controls"]).toBe("menu");
 	});
+
+	test("should move focus into the menu when refs attach after open", () => {
+		const { ports, runEffects } = createMockPorts();
+
+		const menu = createUseMenu(ports)({
+			id: "menu",
+			items: ["Copy", "Cut"],
+			triggerId: "trigger",
+		});
+
+		let focused = "";
+
+		menu.getTriggerAttributes().onClick();
+		runEffects();
+		expect(menu.isOpen()).toBe(true);
+		expect(focused).toBe("");
+
+		menu.triggerRef({
+			focus: () => {
+				focused = "trigger";
+			},
+		});
+
+		menu.menuRef({
+			focus: () => {
+				focused = "menu";
+			},
+		});
+
+		runEffects();
+		expect(focused).toBe("menu");
+	});
 });
 
 describe("useMenubar", () => {
@@ -240,12 +301,26 @@ describe("useSelect", () => {
 		expect(select.isOpen()).toBe(true);
 		expect(select.activeOption()).toBe("Apple");
 		expect(select.getTriggerAttributes()["aria-expanded"]).toBe(true);
+		expect(select.getTriggerAttributes()["aria-activedescendant"]).toBe("select-Apple");
+		select.getTriggerAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
+		expect(select.activeOption()).toBe("Banana");
+		expect(select.isOpen()).toBe(true);
+		expect(select.selectedOption()).toBe("");
+		expect(select.getTriggerAttributes()["aria-activedescendant"]).toBe("select-Banana");
+		select.getTriggerAttributes().onKeyDown(mockKeyboardEvent("ArrowUp"));
+		expect(select.activeOption()).toBe("Apple");
+		select.getTriggerAttributes().onKeyDown(mockKeyboardEvent("Enter"));
+		expect(select.selectedOption()).toBe("Apple");
+		expect(select.isOpen()).toBe(false);
+		expect(select.getTriggerAttributes()["aria-activedescendant"]).toBe("");
+		expect(select.getOptionAttributes("Apple")()["aria-selected"]).toBe(true);
+		select.getTriggerAttributes().onClick();
+		expect(select.isOpen()).toBe(true);
 		select.getListboxAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
 		expect(select.activeOption()).toBe("Banana");
 		select.getListboxAttributes().onKeyDown(mockKeyboardEvent("Enter"));
 		expect(select.selectedOption()).toBe("Banana");
 		expect(select.isOpen()).toBe(false);
-		expect(select.getOptionAttributes("Banana")()["aria-selected"]).toBe(true);
 		select.getTriggerAttributes().onKeyDown(mockKeyboardEvent("Escape"));
 		expect(select.isOpen()).toBe(false);
 	});
@@ -298,6 +373,8 @@ describe("useTreeView", () => {
 		expect(leafAttributes["aria-posinset"]).toBe(1);
 		tree.getTreeAttributes().onKeyDown(mockKeyboardEvent("ArrowDown"));
 		expect(tree.getTreeAttributes()["aria-activedescendant"]).toContain("leaf");
+		expect(tree.activeItem()).toBe("leaf");
+		expect(tree.selectedItem()).toBe("branch");
 		expect(tree.getGroupAttributes("branch")().role).toBe("group");
 	});
 

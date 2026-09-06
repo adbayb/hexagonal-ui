@@ -18,6 +18,7 @@ export type UseTreeViewInput = {
 
 /** TreeView pattern output. */
 export type UseTreeViewOutput = {
+	activeItem: Reactive<string>;
 	expandedItems: Reactive<string[]>;
 	getGroupAttributes: (parentId: string) => Reactive<{
 		"aria-labelledby": string;
@@ -46,7 +47,7 @@ export type UseTreeViewOutput = {
 
 /**
  * Tree View pattern factory. Focus stays on the tree container and the active node is exposed via
- * `aria-activedescendant`, so treeitems keep `tabIndex: -1`.
+ * `activeItem` and `aria-activedescendant`, so treeitems keep `tabIndex: -1`.
  *
  * @example
  * 	const useTreeView = createUseTreeView({ computed, state });
@@ -166,6 +167,7 @@ export const createUseTreeView: PatternFactory<
 		};
 
 		return {
+			activeItem,
 			expandedItems,
 			getGroupAttributes: (parentId: string) => {
 				return computed(() => {

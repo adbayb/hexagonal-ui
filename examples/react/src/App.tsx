@@ -60,11 +60,17 @@ const Disclosure = () => {
 };
 
 const Combobox = () => {
-	const { filteredOptions, getInputAttributes, getOptionAttributes, isOpen, selectedOption } =
-		useCombobox({
-			id: "react-listbox",
-			options: FRUITS,
-		});
+	const {
+		activeOption,
+		filteredOptions,
+		getInputAttributes,
+		getOptionAttributes,
+		isOpen,
+		selectedOption,
+	} = useCombobox({
+		id: "react-listbox",
+		options: FRUITS,
+	});
 
 	return (
 		<div>
@@ -75,11 +81,20 @@ const Combobox = () => {
 					role="listbox"
 				>
 					{filteredOptions().map((option) => {
+						const attributes = getOptionAttributes(option)();
+
 						return (
 							<li
 								key={option}
-								{...getOptionAttributes(option)()}
+								{...attributes}
 								onMouseDown={keepFocusOnMouseDown}
+								style={{
+									background:
+										activeOption() === option ? "#e0f2fe" : "transparent",
+									cursor: "pointer",
+									fontWeight: attributes["aria-selected"] ? "bold" : "normal",
+									padding: "0.25rem 1rem",
+								}}
 							>
 								{option}
 							</li>
@@ -93,7 +108,7 @@ const Combobox = () => {
 };
 
 const Listbox = () => {
-	const { getListboxAttributes, getOptionAttributes } = useListbox({
+	const { activeOption, getListboxAttributes, getOptionAttributes } = useListbox({
 		id: "react-listbox-widget",
 		options: FRUITS,
 	});
@@ -106,14 +121,19 @@ const Listbox = () => {
 			>
 				{FRUITS.map((option) => {
 					const attributes = getOptionAttributes(option)();
+					const isActive = activeOption() === option;
 
 					return (
 						<li
 							key={option}
 							{...attributes}
+							onMouseDown={keepFocusOnMouseDown}
 							style={{
 								alignItems: "center",
-								background: attributes["aria-selected"] ? "#e0f2fe" : "transparent",
+								background:
+									isActive || attributes["aria-selected"]
+										? "#e0f2fe"
+										: "transparent",
 								cursor: "pointer",
 								display: "flex",
 								fontWeight: attributes["aria-selected"] ? "bold" : "normal",
@@ -142,6 +162,7 @@ const NAV_ITEMS = ["File", "Edit", "View", "Help"];
 
 const Menu = () => {
 	const {
+		activeItem,
 		getMenuAttributes,
 		getMenuItemAttributes,
 		getTriggerAttributes,
@@ -182,6 +203,7 @@ const Menu = () => {
 								key={action}
 								{...getMenuItemAttributes(action)()}
 								style={{
+									background: activeItem() === action ? "#e0f2fe" : "transparent",
 									cursor: "pointer",
 									padding: "0.25rem 1rem",
 								}}
@@ -237,6 +259,7 @@ const Menubar = () => {
 
 const Select = () => {
 	const {
+		activeOption,
 		getListboxAttributes,
 		getOptionAttributes,
 		getTriggerAttributes,
@@ -269,12 +292,18 @@ const Select = () => {
 					}}
 				>
 					{FRUITS.map((option) => {
+						const attributes = getOptionAttributes(option)();
+
 						return (
 							<li
 								key={option}
-								{...getOptionAttributes(option)()}
+								{...attributes}
+								onMouseDown={keepFocusOnMouseDown}
 								style={{
+									background:
+										activeOption() === option ? "#e0f2fe" : "transparent",
 									cursor: "pointer",
+									fontWeight: attributes["aria-selected"] ? "bold" : "normal",
 									padding: "0.25rem 1rem",
 								}}
 							>
@@ -324,18 +353,28 @@ const getItemPrefix = (hasChildren: boolean, isExpanded: boolean): string => {
 };
 
 const TreeView = () => {
-	const { expandedItems, getGroupAttributes, getTreeAttributes, getTreeItemAttributes } =
-		useTreeView({ id: "react-tree", items: TREE_ITEMS });
+	const {
+		activeItem,
+		expandedItems,
+		getGroupAttributes,
+		getTreeAttributes,
+		getTreeItemAttributes,
+	} = useTreeView({ id: "react-tree", items: TREE_ITEMS });
 
 	const renderItems = (items: UseTreeViewInput["items"]): React.ReactNode => {
 		return items.map((item) => {
+			const attributes = getTreeItemAttributes(item.id)();
+
 			return (
 				<li key={item.id}>
 					<span
-						{...getTreeItemAttributes(item.id)()}
+						{...attributes}
+						onMouseDown={keepFocusOnMouseDown}
 						style={{
+							background: activeItem() === item.id ? "#e0f2fe" : "transparent",
 							cursor: "pointer",
 							display: "block",
+							fontWeight: attributes["aria-selected"] ? "bold" : "normal",
 							padding: "0.125rem 0.25rem",
 						}}
 					>

@@ -1,5 +1,6 @@
 import type { Event, FocusEvent, KeyboardEvent } from "../shared/Event";
 import { readInputValue } from "../shared/Event";
+import { navigateNext, navigatePrevious } from "../shared/navigation";
 import type { PatternFactory } from "../shared/Pattern";
 import type { FrameworkPort } from "../shared/Port";
 import type { Reactive } from "../shared/types";
@@ -12,8 +13,10 @@ export type UseComboboxInput = {
 
 /** Combobox pattern output. */
 export type UseComboboxOutput = {
+	activeOption: Reactive<string>;
 	filteredOptions: Reactive<string[]>;
 	getInputAttributes: Reactive<{
+		"aria-activedescendant": string;
 		"aria-autocomplete": "list";
 		"aria-controls": string;
 		"aria-expanded": boolean;
@@ -54,18 +57,28 @@ export const createUseCombobox: PatternFactory<
 	return (input) => {
 		const [inputValue, setInputValue] = state("");
 		const [isOpen, setIsOpen] = state(false);
+		const [activeOption, setActiveOption] = state("");
 		const [selectedOption, setSelectedOption] = state("");
 
-		const filteredOptions = computed(() => {
+		const filterOptions = (query: string) => {
 			return input.options.filter((option) => {
-				return option.toLowerCase().includes(inputValue().toLowerCase());
+				return option.toLowerCase().includes(query.toLowerCase());
 			});
+		};
+
+		const filteredOptions = computed(() => {
+			return filterOptions(inputValue());
 		});
+
+		const close = () => {
+			setIsOpen(false);
+			setActiveOption("");
+		};
 
 		const selectOption = (value: string) => {
 			setSelectedOption(value);
 			setInputValue(value);
-			setIsOpen(false);
+			close();
 		};
 
 		const optionId = (value: string) => {
@@ -77,7 +90,7 @@ export const createUseCombobox: PatternFactory<
 				return;
 			}
 
-			setIsOpen(false);
+			close();
 		};
 
 		const handleInput = (event: Event) => {
@@ -85,13 +98,32 @@ export const createUseCombobox: PatternFactory<
 
 			setInputValue(value);
 			setIsOpen(value.length > 0);
+			setActiveOption(value.length > 0 ? (filterOptions(value).at(0) ?? "") : "");
 		};
 
 		const handleKeyDown = (event: KeyboardEvent) => {
 			switch (event.key) {
 				case "ArrowDown": {
 					event.preventDefault();
-					setIsOpen(true);
+
+					if (isOpen()) {
+						setActiveOption(navigateNext(filteredOptions(), activeOption()));
+					} else {
+						setIsOpen(true);
+						setActiveOption(filteredOptions().at(0) ?? "");
+					}
+
+					break;
+				}
+				case "ArrowUp": {
+					event.preventDefault();
+
+					if (isOpen()) {
+						setActiveOption(navigatePrevious(filteredOptions(), activeOption()));
+					} else {
+						setIsOpen(true);
+						setActiveOption(filteredOptions().at(-1) ?? "");
+					}
 
 					break;
 				}
@@ -102,10 +134,11 @@ export const createUseCombobox: PatternFactory<
 
 					event.preventDefault();
 
-					const first = filteredOptions().at(0);
+					const value =
+						activeOption() === "" ? (filteredOptions().at(0) ?? "") : activeOption();
 
-					if (first !== undefined) {
-						selectOption(first);
+					if (value !== "") {
+						selectOption(value);
 					}
 
 					break;
@@ -116,7 +149,7 @@ export const createUseCombobox: PatternFactory<
 					}
 
 					event.preventDefault();
-					setIsOpen(false);
+					close();
 
 					break;
 				}
@@ -127,9 +160,11 @@ export const createUseCombobox: PatternFactory<
 		};
 
 		return {
+			activeOption,
 			filteredOptions,
 			getInputAttributes: computed(() => {
 				return {
+					"aria-activedescendant": activeOption() ? optionId(activeOption()) : "",
 					"aria-autocomplete": "list",
 					"aria-controls": input.id,
 					"aria-expanded": isOpen(),

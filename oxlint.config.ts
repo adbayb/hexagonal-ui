@@ -8,11 +8,13 @@ export default defineConfig({
 		{
 			/*
 			 * Headless ARIA demos attach roles and handlers to plain elements by design.
+			 * Roles come from pattern attribute spreads, which static analysis cannot see.
 			 */
 			files: ["**/examples/**"],
 			rules: {
 				"jsx-a11y/no-noninteractive-element-interactions": "off",
 				"jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
+				"jsx-a11y/no-static-element-interactions": "off",
 				"jsx-a11y/prefer-tag-over-role": "off",
 			},
 		},

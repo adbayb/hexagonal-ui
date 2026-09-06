@@ -90,8 +90,14 @@ const Combobox = defineComponent({
 			options: FRUITS,
 		});
 
-		const { filteredOptions, getInputAttributes, getOptionAttributes, isOpen, selectedOption } =
-			combobox;
+		const {
+			activeOption,
+			filteredOptions,
+			getInputAttributes,
+			getOptionAttributes,
+			isOpen,
+			selectedOption,
+		} = combobox;
 
 		return () => {
 			return (
@@ -103,12 +109,24 @@ const Combobox = defineComponent({
 							role="listbox"
 						>
 							{filteredOptions().map((option) => {
+								const attributes = getOptionAttributes(option)();
+
 								return (
 									<li
 										key={option}
-										{...getOptionAttributes(option)()}
-										// eslint-disable-next-line @eslint-react/dom-no-unknown-property
+										{...attributes}
 										onMousedown={keepFocusOnMouseDown}
+										style={{
+											background:
+												activeOption() === option
+													? "#e0f2fe"
+													: "transparent",
+											cursor: "pointer",
+											fontWeight: attributes["aria-selected"]
+												? "bold"
+												: "normal",
+											padding: "0.25rem 1rem",
+										}}
 									>
 										{option}
 									</li>
@@ -126,7 +144,7 @@ const Combobox = defineComponent({
 const Listbox = defineComponent({
 	setup() {
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
-		const { getListboxAttributes, getOptionAttributes } = useListbox({
+		const { activeOption, getListboxAttributes, getOptionAttributes } = useListbox({
 			id: "vue-listbox-widget",
 			options: FRUITS,
 		});
@@ -140,16 +158,19 @@ const Listbox = defineComponent({
 					>
 						{FRUITS.map((option) => {
 							const attributes = getOptionAttributes(option)();
+							const isActive = activeOption() === option;
 
 							return (
 								<li
 									key={option}
 									{...attributes}
+									onMousedown={keepFocusOnMouseDown}
 									style={{
 										alignItems: "center",
-										background: attributes["aria-selected"]
-											? "#e0f2fe"
-											: "transparent",
+										background:
+											isActive || attributes["aria-selected"]
+												? "#e0f2fe"
+												: "transparent",
 										cursor: "pointer",
 										display: "flex",
 										fontWeight: attributes["aria-selected"] ? "bold" : "normal",
@@ -200,6 +221,7 @@ const Menu = defineComponent({
 		});
 
 		const {
+			activeItem,
 			getMenuAttributes,
 			getMenuItemAttributes,
 			getTriggerAttributes,
@@ -239,6 +261,8 @@ const Menu = defineComponent({
 										key={action}
 										{...getMenuItemAttributes(action)()}
 										style={{
+											background:
+												activeItem() === action ? "#e0f2fe" : "transparent",
 											cursor: "pointer",
 											padding: "0.25rem 1rem",
 										}}
@@ -314,6 +338,7 @@ const Select = defineComponent({
 		});
 
 		const {
+			activeOption,
 			getListboxAttributes,
 			getOptionAttributes,
 			getTriggerAttributes,
@@ -343,12 +368,22 @@ const Select = defineComponent({
 							}}
 						>
 							{FRUITS.map((option) => {
+								const attributes = getOptionAttributes(option)();
+
 								return (
 									<li
 										key={option}
-										{...getOptionAttributes(option)()}
+										{...attributes}
+										onMousedown={keepFocusOnMouseDown}
 										style={{
+											background:
+												activeOption() === option
+													? "#e0f2fe"
+													: "transparent",
 											cursor: "pointer",
+											fontWeight: attributes["aria-selected"]
+												? "bold"
+												: "normal",
 											padding: "0.25rem 1rem",
 										}}
 									>
@@ -404,18 +439,28 @@ const TreeView = defineComponent({
 		// eslint-disable-next-line @eslint-react/rules-of-hooks
 		const treeView = useTreeView({ id: "vue-tree", items: TREE_ITEMS });
 
-		const { expandedItems, getGroupAttributes, getTreeAttributes, getTreeItemAttributes } =
-			treeView;
+		const {
+			activeItem,
+			expandedItems,
+			getGroupAttributes,
+			getTreeAttributes,
+			getTreeItemAttributes,
+		} = treeView;
 
 		const renderItems = (items: UseTreeViewInput["items"]): VNode[] => {
 			return items.map((item) => {
+				const attributes = getTreeItemAttributes(item.id)();
+
 				return (
 					<li key={item.id}>
 						<span
-							{...getTreeItemAttributes(item.id)()}
+							{...attributes}
+							onMousedown={keepFocusOnMouseDown}
 							style={{
+								background: activeItem() === item.id ? "#e0f2fe" : "transparent",
 								cursor: "pointer",
 								display: "block",
+								fontWeight: attributes["aria-selected"] ? "bold" : "normal",
 								padding: "0.125rem 0.25rem",
 							}}
 						>

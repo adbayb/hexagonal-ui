@@ -43,14 +43,19 @@ const useState: FrameworkPort["state"] = (initialState) => {
 const useElementReference = <Value>(
 	initialValue: null | Value = null,
 ): readonly [() => null | Value, (newValue: null | Value) => void] => {
-	const [value, setValue] = useStateReact<null | Value>(initialValue);
+	/*
+	 * Plain `useRef` storage (not `useState`): ref callbacks must be readable synchronously,
+	 * otherwise core focus effects run before the node lands and focus is lost.
+	 * No re-render is needed since nothing reads the node during render.
+	 */
+	const reference = useRef<null | Value>(initialValue);
 
 	return [
 		() => {
-			return value;
+			return reference.current;
 		},
 		(newValue) => {
-			setValue(newValue);
+			reference.current = newValue;
 		},
 	] as const;
 };
